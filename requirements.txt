@@ -1,0 +1,9 @@
+click==6.7
+enum-compat==0.0.2
+enum34==1.1.6
+piecash==0.16.0
+pytz==2018.3
+six==1.11.0
+SQLAlchemy==1.2.6
+SQLAlchemy-Utils==0.33.2
+tzlocal==1.5.1
