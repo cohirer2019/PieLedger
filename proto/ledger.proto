@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package pieledger;
+
+enum AccountType {
+  ROOT = 0;
+  ASSET = 1;
+  MUTUAL = 2;
+  CASH = 3;
+  ASSET = 4;
+  BANK = 5;
+  STOCK = 6;
+  CREDIT = 7;
+  LIABILITY = 8;
+  PAYABLE = 9;
+  INCOME = 10;
+  EXPENSE = 11;
+  TRADING = 12;
+  EQUITY = 13;
+}
+
+message Account {
+  string guid = 1;
+  string name = 2;
+  AccountType type = 3;
+  Account parent = 4;
+  bool placeholder = 5;
+  sint32 balance = 6;
+}
+
+message Split {
+  string guid = 1;
+  Account account = 2;
+  Transaction transaction = 3;
+  sint32 value = 4;
+  string memo = 5;  
+}
+
+message Transaction {
+  string guid = 1;
+  string reference = 2;
+  string description = 3;
+  
+  repeated Split splits = 4;
+}
