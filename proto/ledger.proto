@@ -4,7 +4,7 @@ package pieledger;
 
 enum AccountType {
   ROOT = 0;
-  ASSET = 1;
+  RECEIVABLE = 1;
   MUTUAL = 2;
   CASH = 3;
   ASSET = 4;

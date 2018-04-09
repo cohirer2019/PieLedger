@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-import "proto/ledger.proto";
+import "ledger.proto";
 
 package pieledger;
 
 message AccountQueryRequest {
   string guid = 1;
   string name = 2;
-  string parent_guid = 2;
+  string parent_guid = 3;
 }
 
 message AccountBalanceRequest {
