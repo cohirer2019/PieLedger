@@ -5,7 +5,7 @@ from .config import ledger_config
 
 
 db_uri = ledger_config.get('db_uri')
-assert db_uri, 'Pieledger requires GnuCash work with database and '\
+assert db_uri, 'PieLedger requires GnuCash work with database and '\
     'should have db_uri defined'
 
 

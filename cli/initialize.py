@@ -12,4 +12,4 @@ def genesis(overwrite):
     try:
         create_book(overwrite=overwrite)
     except GnucashException, e:
-        print str(e)
+        click.echo(e)
