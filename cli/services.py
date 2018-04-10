@@ -9,13 +9,8 @@ def service():
     pass
 
 
-@click.command()
-@click.argument('command')
+@service.command()
+@click.argument('command', type=click.Choice(('start', )))
 def grpc(command):
     if command == 'start':
         serve_grpc()
-    else:
-        click.echo('Unknown command')
-
-
-service.add_command(grpc)
