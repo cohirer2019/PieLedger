@@ -1,0 +1,1 @@
+db_uri: mysql+pymysql://[username]:[password]@localhost/pieledger?charset=utf8&use_unicode=0 

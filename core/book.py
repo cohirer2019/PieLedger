@@ -1,16 +1,22 @@
+# -*- coding:utf-8 -*-
 import piecash
 
-book = piecash.create_book(
-    keep_foreign_keys=True,
-    uri_conn="mysql+pymysql://cohirer:Letsgo!@localhost/pieledger?charset=utf8&use_unicode=0",
-    overwrite=True
-)
+from .config import ledger_config
 
-acc = piecash.Account(
-    name="My account",
-    type="ASSET",
-    parent=book.root_account,
-    commodity=book.commodities.get(mnemonic="EUR"),
-    placeholder=True)
 
-book.save()
+db_uri = ledger_config.get('db_uri')
+assert db_uri, 'Pieledger requires GnuCash work with database and '\
+    'should have db_uri defined'
+
+
+def create_book(overwrite=False):
+    piecash.create_book(
+        keep_foreign_keys=True,
+        uri_conn=db_uri,
+        overwrite=overwrite
+    )
+
+
+def open_book(read_only=False):
+    return piecash.open_book(
+        uri_conn=db_uri, open_if_lock=True, read_only=read_only)
