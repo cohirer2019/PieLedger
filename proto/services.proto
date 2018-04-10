@@ -4,41 +4,24 @@ import "ledger.proto";
 
 package pieledger;
 
-message AccountQueryRequest {
-  string guid = 1;
-  string name = 2;
-  string parent_guid = 3;
-}
-
 message AccountBalanceRequest {
   Account account = 1;
   bool force = 2;
 }
 
 message TransactionQueryRequest {
-  string guid = 1;
-  string refrence = 2;
-}
-
-message DeleteResult {
-  enum Result {
-    SUCCESS = 0;
-    FAILED = 1;
-  }
-  Result result = 1;
-  string error_msg = 2;
+  repeated string guids = 1;
+  Account account = 2;
+  int32 page_number = 3;
+  int32 result_per_page = 4;
 }
 
 service PieLedger {
-  rpc CreateAccount(Account) returns (Account);
   rpc FindOrCreateAccount(Account) returns (Account);
-  rpc FindAccounts(AccountQueryRequest) returns (stream Account);
   rpc AlterAccount(Account) returns (Account);
-  rpc DeleteAccount(Account) returns (DeleteResult);
   rpc UpdateBalance(AccountBalanceRequest) returns (Account);
 
   rpc CreateTransaction(Transaction) returns (Transaction);
   rpc FindTransations(TransactionQueryRequest) returns (stream Transaction);
   rpc AlterTransaction(Transaction) returns (Transaction);
-  rpc DeleteTransaction(Transaction) returns (DeleteResult);
 }
