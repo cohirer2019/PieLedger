@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*-
-import sys
-import unittest
 import warnings
 
 import yaml
@@ -20,5 +18,5 @@ def _load_test_config():
 def init_test(sqlite=False, **kw):
     _load_test_config()
     if sqlite:
-        ledger_config['db_uri'] = 'sqlite://'
+        ledger_config['db_uri'] = 'sqlite:///.sqlite'
     create_book(overwrite=True)

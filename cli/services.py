@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 import click
 
-from api.grpc.server import serve as serve_grpc
-
 
 @click.group()
 def service():
@@ -13,4 +11,5 @@ def service():
 @click.argument('command', type=click.Choice(('start', )))
 def grpc(command):
     if command == 'start':
-        serve_grpc()
+        from api.grpc.server import serve
+        serve()

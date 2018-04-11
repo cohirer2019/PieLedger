@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import sys
-from unittest import main
 import argparse
+from unittest import main
 
 from tests import * #noqa
 from tests.base import init_test
@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     class MyUnitTest(main):
         USAGE = main.USAGE.replace(
-            'Options:', 'Options:\n  -s, --sqlite     Use sqlite memory db')
+            'Options:', 'Options:\n  -s, --sqlite     Use sqlite db')
 
         def runTests(self):
             init_test(**vars(init_args))

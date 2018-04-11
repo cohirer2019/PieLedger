@@ -4,5 +4,6 @@
 build/
 dist/
 .ropeproject
+.sqlite
 config.yml
 config_test.yml
