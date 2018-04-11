@@ -2,6 +2,7 @@
 from piecash.core import Account
 
 from core.book import open_book
+from mappers import account_mapper
 import ledger_pb2
 import services_pb2_grpc
 
@@ -17,8 +18,6 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                 Account.guid == request.guid
             ).first()
             if account:
-                return ledger_pb2.Account(
-                    guid=account.guid,
-                    name=account.name,
-                    balance=100
-                )
+                ret = account_mapper.map(account)
+                ret.balance = 100
+                return ret
