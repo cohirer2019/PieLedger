@@ -2,7 +2,7 @@
 import click
 
 from initialize import genesis
-from services import service
+from grpc import grpc
 
 
 @click.group()
@@ -11,4 +11,4 @@ def manager():
 
 
 manager.add_command(genesis)
-manager.add_command(service)
+manager.add_command(grpc)
