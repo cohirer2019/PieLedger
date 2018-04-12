@@ -22,6 +22,6 @@ service PieLedger {
   rpc UpdateBalance(AccountBalanceRequest) returns (Account);
 
   rpc CreateTransaction(Transaction) returns (Transaction);
-  rpc FindTransations(TransactionQueryRequest) returns (stream Transaction);
+  rpc FindTransactions(TransactionQueryRequest) returns (stream Transaction);
   rpc AlterTransaction(Transaction) returns (Transaction);
 }

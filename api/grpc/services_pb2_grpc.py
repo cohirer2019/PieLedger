@@ -35,7 +35,7 @@ class PieLedgerStub(object):
         request_serializer=ledger__pb2.Transaction.SerializeToString,
         response_deserializer=ledger__pb2.Transaction.FromString,
         )
-    self.FindTransations = channel.unary_stream(
+    self.FindTransactions = channel.unary_stream(
         '/pieledger.PieLedger/FindTransations',
         request_serializer=services__pb2.TransactionQueryRequest.SerializeToString,
         response_deserializer=ledger__pb2.Transaction.FromString,
@@ -79,7 +79,7 @@ class PieLedgerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
-  def FindTransations(self, request, context):
+  def FindTransactions(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -117,7 +117,7 @@ def add_PieLedgerServicer_to_server(servicer, server):
           response_serializer=ledger__pb2.Transaction.SerializeToString,
       ),
       'FindTransations': grpc.unary_stream_rpc_method_handler(
-          servicer.FindTransations,
+          servicer.FindTransactions,
           request_deserializer=services__pb2.TransactionQueryRequest.FromString,
           response_serializer=ledger__pb2.Transaction.SerializeToString,
       ),

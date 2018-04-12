@@ -29,6 +29,21 @@ class OneWayMapper(_OneWayMapper):
         super(OneWayMapper, self).__init__(
             attributes_cache_provider=AttributesCache, *args, **kw)
 
+    def __apply_mapping(self, source_obj, attr_name_mapping):
+
+        mapped_params_dict = {}
+
+        for attr_name_from, attr_name_to in attr_name_mapping.items():
+            # skip since mapping is suppressed by user (attribute_name = None)
+            if not (attr_name_from and attr_name_to):
+                continue
+
+            source_attr_value = self.__get_attribute_value(source_obj, attr_name_from)
+            if self.__do_apply_mapping(attr_name_from, attr_name_to, source_attr_value):
+                mapped_params_dict[attr_name_to] = self.__do_apply_mapping(attr_name_from, attr_name_to, source_attr_value)
+
+        return mapped_params_dict
+
 
 account_mapper = OneWayMapper(ledger_pb2.Account)
 account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
@@ -37,6 +52,6 @@ account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
 account_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Account.__table__.columns.keys()})
 account_model_mapper = account_model_mapper.target_initializers({
-    'account_type': lambda obj: ledger_pb2.AccountType.Name(obj.type),
+    'type': lambda obj: ledger_pb2.AccountType.Name(obj.type),
     'parent_guid': lambda obj: obj.parent.guid
 })

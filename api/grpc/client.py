@@ -1,9 +1,22 @@
 import grpc
 
 import services_pb2_grpc
+import services_pb2
 import ledger_pb2
 
 
+# def run():
+#     channel = grpc.insecure_channel('localhost:50051')
+#     stub = services_pb2_grpc.PieLedgerStub(channel)
+#     try:
+#         response = stub.FindTransactions(
+#             services_pb2.TransactionQueryRequest(
+#                 guids=['9a7hys', '1qaz', '2wsx'],
+#                 account=ledger_pb2.Account(
+#                     guid='8b1d8d5e9d6d4e40ae956f3b1943eb92'),
+#                 page_number=5,
+#                 result_per_page=20)
+#         )
 def run():
     channel = grpc.insecure_channel('localhost:50051')
     stub = services_pb2_grpc.PieLedgerStub(channel)
