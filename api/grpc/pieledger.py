@@ -4,13 +4,14 @@ from piecash.core import Account
 import grpc
 
 from core.book import open_book
-from core.account import AccountManager, TransactionManager
+from core.account import AccountManager
 from mappers import account_mapper
 import ledger_pb2
 import services_pb2_grpc
 
 
 class PieLedger(services_pb2_grpc.PieLedgerServicer):
+
     def FindOrCreateAccount(self, request, context):
         with open_book() as book:
             request_args = protobuf_to_dict(request)
