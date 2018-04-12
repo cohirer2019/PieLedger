@@ -36,7 +36,7 @@ class PieLedgerStub(object):
         response_deserializer=ledger__pb2.Transaction.FromString,
         )
     self.FindTransactions = channel.unary_stream(
-        '/pieledger.PieLedger/FindTransations',
+        '/pieledger.PieLedger/FindTransactions',
         request_serializer=services__pb2.TransactionQueryRequest.SerializeToString,
         response_deserializer=ledger__pb2.Transaction.FromString,
         )
@@ -116,7 +116,7 @@ def add_PieLedgerServicer_to_server(servicer, server):
           request_deserializer=ledger__pb2.Transaction.FromString,
           response_serializer=ledger__pb2.Transaction.SerializeToString,
       ),
-      'FindTransations': grpc.unary_stream_rpc_method_handler(
+      'FindTransactions': grpc.unary_stream_rpc_method_handler(
           servicer.FindTransactions,
           request_deserializer=services__pb2.TransactionQueryRequest.FromString,
           response_serializer=ledger__pb2.Transaction.SerializeToString,
