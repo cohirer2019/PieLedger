@@ -3,7 +3,7 @@
 def _patch_account():  #noqa
 
     import warnings
-    from sqlalchemy import Column, BIGINT, exc as sa_exc
+    from sqlalchemy import Column, BIGINT, inspect, exc as sa_exc
     from sqlalchemy.sql import func
     from piecash.core import Account, Split
     from piecash.core.account import ACCOUNT_TYPES, \
@@ -48,7 +48,8 @@ def _patch_account():  #noqa
         if commodity is None:
             commodity = self.commodity
 
-        if self._cached_balance is not None:
+        if inspect(self).persistent and self._cached_balance is not None:
+            # Only use cached value if the account is persistent
             balance = self._cached_balance
         else:
             with warnings.catch_warnings():
@@ -83,12 +84,14 @@ def _patch_account():  #noqa
 
 
 def _reg_invalidate_balance():
+
+    from itertools import chain
     from sqlalchemy import event
     from piecash.core import Split
     from piecash.sa_extra import Session
 
     def _invalidate_balance(session, context, _):
-        for obj in session.new:
+        for obj in chain(session.new, session.dirty, session.deleted):
             if isinstance(obj, Split):
                 obj.account._cached_balance = None
 
