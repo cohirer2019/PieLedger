@@ -4,7 +4,8 @@ import grpc
 
 from core.book import open_book
 from core.account import AccountManager
-from mappers import account_mapper, account_model_mapper
+from core.transaction import TransactionManager
+from mappers import account_mapper, account_model_mapper, transaction_model_mapper
 import ledger_pb2
 import services_pb2_grpc
 
@@ -47,10 +48,10 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                 ret.balance = 100
                 return ret
 
-    # def FindTransactions(self, request, context):
-    #     with open_book() as book:
-    #         import pdb
-    #         pdb.set_trace()
-    #         request_args = protobuf_to_dict(request)
-    #         trans_mgr = TransactionManager(book, **request_args)
-    #         transaction = trans_mgr.find_transaction()
+    def FindTransations(self, request, context):
+        with open_book() as book:
+            request_args = transaction_model_mapper.map(request)
+            import pdb
+            pdb.set_trace()
+            trans_mgr = TransactionManager(book, **request_args)
+            transaction = trans_mgr.find_transaction()

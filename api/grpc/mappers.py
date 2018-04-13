@@ -55,3 +55,14 @@ account_model_mapper = account_model_mapper.target_initializers({
     'type': lambda obj: ledger_pb2.AccountType.Name(obj.type),
     'parent_guid': lambda obj: obj.parent.guid
 })
+
+
+transaction_mapper = OneWayMapper(ledger_pb2.Transaction)
+transaction_mapper = transaction_mapper.nested_mapper(transaction_mapper, core.Transaction)
+
+transaction_model_mapper = OneWayMapper(
+    dict, {k: None for k in core.Transaction.__table__.columns.keys()})
+# account_model_mapper = transaction_model_mapper.target_initializers({
+#     'type': lambda obj: ledger_pb2.AccountType.Name(obj.type),
+#     'parent_guid': lambda obj: obj.parent.guid
+# })
