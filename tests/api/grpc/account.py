@@ -1,22 +1,19 @@
 # -*- coding:utf-8 -*-
 import grpc
-from piecash.core import Account
 
 from api.grpc import ledger_pb2
+from api.grpc.mappers import account_mapper
 from .base import PieLedgerGrpcTest
 
 
 class GrpcAccountTest(PieLedgerGrpcTest):
 
     def test_update_balance(self):
-        self.assertEqual(len(self.book.accounts), 0)
-        book = self.book
-        acc = Account('balance', 'ASSET', None, parent=book.root_account)
-        book.add(acc)
-        book.save()
+        acc = self.make_account('balance', 'ASSET')
+        self.book.save()
 
         response, result = self.unary_unary(
-            'UpdateBalance', ledger_pb2.Account(guid=acc.guid))
+            'UpdateBalance', account_mapper.map(acc))
 
         self.assertEqual(response.balance, 100)
         self.assertIs(result.code, grpc.StatusCode.OK)
