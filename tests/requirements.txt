@@ -1,0 +1,4 @@
+funcsigs==1.0.2
+git+http://dev.smart4e.com/cohirer/grpcio_testing.git@v1.10.1#egg=grpcio_testing
+mock==2.0.0
+pbr==4.0.2
