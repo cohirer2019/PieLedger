@@ -58,11 +58,21 @@ account_model_mapper = account_model_mapper.target_initializers({
 
 
 transaction_mapper = OneWayMapper(ledger_pb2.Transaction)
-transaction_mapper = transaction_mapper.nested_mapper(transaction_mapper, core.Transaction)
+split_mapper = OneWayMapper(ledger_pb2.Split)
+split_mapper = split_mapper.nested_mapper(account_mapper, core.Account)
+split_mapper = split_mapper.target_initializers({
+    'value': lambda obj: int(obj.value),
+})
+
+
+transaction_mapper = transaction_mapper.target_initializers({
+    'splits': lambda obj: [split_mapper.map(split) for split in obj.splits]})
 
 transaction_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Transaction.__table__.columns.keys()})
-# account_model_mapper = transaction_model_mapper.target_initializers({
-#     'type': lambda obj: ledger_pb2.AccountType.Name(obj.type),
-#     'parent_guid': lambda obj: obj.parent.guid
-# })
+transaction_model_mapper = transaction_model_mapper.target_initializers({
+    'guids': lambda obj: obj.guids,
+    'account': lambda obj: obj.account,
+    'page_number': lambda obj: obj.page_number,
+    'result_per_page': lambda obj: obj.result_per_page
+})
