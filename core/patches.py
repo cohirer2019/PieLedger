@@ -20,8 +20,8 @@ def _patch_account():
                     'Child type "{}" is not consistent with parent '
                     'type {}'.format(self.type, self.parent.type))
 
-            for acc in self.book.session.query(Account).filter(
-                    Account.guid == self.parent_guid,
+            for acc in self.book.query(Account).filter(
+                    Account.parent_guid == self.parent_guid,
                     Account.name == self.name):
                 if acc.name == self.name and acc.guid != self.guid:
                     raise ValueError(

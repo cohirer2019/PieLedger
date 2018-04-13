@@ -1,10 +1,29 @@
 # -*- coding:utf-8 -*-
 import sys
 import argparse
+import warnings
 from unittest import main
 
+import yaml
+
+from core.config import ledger_config
+from core.book import create_book
 from tests import * #noqa
-from tests.base import init_test
+
+
+def _load_test_config():
+    try:
+        with open("config_test.yml", 'r+') as ymlfile:
+            ledger_config.update(yaml.load(ymlfile))
+    except IOError:
+        warnings.warn('Failed to locate config_test.yml')
+
+
+def _init_test(sqlite=False, **kw):
+    _load_test_config()
+    if sqlite:
+        ledger_config['db_uri'] = 'sqlite:///.sqlite'
+    create_book(overwrite=True)
 
 
 if __name__ == '__main__':
@@ -18,7 +37,7 @@ if __name__ == '__main__':
             'Options:', 'Options:\n  -s, --sqlite     Use sqlite db')
 
         def runTests(self):
-            init_test(**vars(init_args))
+            _init_test(**vars(init_args))
             super(MyUnitTest, self).runTests()
 
-    MyUnitTest(verbosity=2, argv=[sys.argv[0]] + test_args)
+    MyUnitTest(verbosity=3, argv=[sys.argv[0]] + test_args)
