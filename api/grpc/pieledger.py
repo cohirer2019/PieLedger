@@ -51,7 +51,5 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     def FindTransations(self, request, context):
         with open_book() as book:
             request_args = transaction_model_mapper.map(request)
-            import pdb
-            pdb.set_trace()
             trans_mgr = TransactionManager(book, **request_args)
             transaction = trans_mgr.find_transaction()
