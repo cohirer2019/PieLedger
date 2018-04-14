@@ -12,7 +12,9 @@ from core.book import create_book
 def _load_test_config():
     try:
         with open('config_test.yml', 'r+') as ymlfile:
-            ledger_config.update(yaml.load(ymlfile))
+            test_config = yaml.load(ymlfile)
+            if test_config:
+                ledger_config.update()
     except IOError:
         warnings.warn('Failed to locate config_test.yml')
 

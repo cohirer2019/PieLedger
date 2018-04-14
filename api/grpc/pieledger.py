@@ -5,9 +5,11 @@ import grpc
 from core.book import open_book
 from core.account import AccountManager
 from core.transaction import TransactionManager
-from mappers import account_mapper, account_model_mapper, transaction_model_mapper
-import ledger_pb2
-import services_pb2_grpc
+
+from .mappers import account_mapper, account_model_mapper, \
+    transaction_model_mapper
+from . import ledger_pb2
+from . import services_pb2_grpc
 
 
 class PieLedger(services_pb2_grpc.PieLedgerServicer):

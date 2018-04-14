@@ -5,7 +5,7 @@ import piecash
 from piecash.core import Account
 from sqlalchemy import schema
 
-from config import ledger_config
+from .config import ledger_config
 
 
 def _db_uri():

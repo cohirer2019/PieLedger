@@ -2,7 +2,7 @@
 from api.grpc import ledger_pb2
 from piecash.core import Transaction
 
-from base import BaseManager
+from .base import BaseManager
 
 
 class TransactionManager(BaseManager):

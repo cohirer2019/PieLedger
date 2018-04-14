@@ -11,5 +11,5 @@ from core.book import create_book
 def genesis(overwrite):
     try:
         create_book(overwrite=overwrite)
-    except GnucashException, e:
+    except GnucashException as e:
         click.echo(e)

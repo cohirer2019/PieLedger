@@ -4,14 +4,14 @@ import time
 
 import grpc
 
-import services_pb2_grpc
-import pieledger
+from . import services_pb2_grpc
+from . import pieledger
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor())
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=0))
     services_pb2_grpc.add_PieLedgerServicer_to_server(
         pieledger.PieLedger(), server)
     server.add_insecure_port('[::]:50051')
