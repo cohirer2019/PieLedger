@@ -42,7 +42,7 @@ class LedgerInitializer(nose.plugins.Plugin):
 
 if __name__ == '__main__':
     additional_args = [
-        '--rednose', '--nocapture', '--verbosity=2']
+        '--rednose', '--nocapture', '--hide-skips', '--verbosity=2']
     nose.main(
         module='tests', argv=sys.argv.extend(additional_args),
         addplugins=[LedgerInitializer()]
