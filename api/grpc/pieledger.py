@@ -6,11 +6,10 @@ from sqlalchemy import exc
 from core.book import open_book
 from core.account import AccountManager
 from core.transaction import TransactionManager
-
+from .mappers import account_mapper, account_model_mapper, \
+    transaction_model_mapper, transaction_mapper
 from . import ledger_pb2
 from . import services_pb2_grpc
-from .mappers import account_mapper, account_model_mapper, \
-    transaction_model_mapper
 
 
 class PieLedger(services_pb2_grpc.PieLedgerServicer):
@@ -49,11 +48,13 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     def FindTransactions(self, request, context):
         with open_book() as book:
             trans_mgr = TransactionManager(book)
-            transactions = trans_mgr.find_transaction(
+            transactions, num = trans_mgr.find_transaction(
                 request.guids, request.account, request.page_number,
                 request.result_per_page)
             if not transactions:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details("transaction %s not found")
                 return ledger_pb2.Transaction()
-            return [transaction_mapper.map(transaction) for transaction in transactions]
+            context.send_initial_metadata((('num', num),))
+            for transaction in transactions:
+                yield transaction_mapper.map(transaction)
