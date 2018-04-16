@@ -4,11 +4,6 @@ import "ledger.proto";
 
 package pieledger;
 
-message AccountBalanceRequest {
-  Account account = 1;
-  bool force = 2;
-}
-
 message TransactionQueryRequest {
   repeated string guids = 1;
   Account account = 2;
@@ -19,7 +14,6 @@ message TransactionQueryRequest {
 service PieLedger {
   rpc FindOrCreateAccount(Account) returns (Account);
   rpc AlterAccount(Account) returns (Account);
-  rpc UpdateBalance(AccountBalanceRequest) returns (Account);
 
   rpc CreateTransaction(Transaction) returns (Transaction);
   rpc FindTransactions(TransactionQueryRequest) returns (stream Transaction);

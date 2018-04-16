@@ -23,5 +23,4 @@ class AccountManager(BaseManager):
             if not kw['parent']:
                 raise ValueError('Parent account<%s> not found' % parent_guid)
         account = Account(**kw)
-        self.book.save()
         return account

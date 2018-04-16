@@ -8,15 +8,45 @@ from .base import PieLedgerGrpcTest
 
 class GrpcAccountTest(PieLedgerGrpcTest):
 
-    def test_update_balance(self):
+    def test_query_with_balance(self):
+        """Account balance is fetched per request properly"""
+
         acc = self.make_account('balance', 'ASSET')
+        acc_1 = self.make_account('cash', 'CASH')
         self.book.save()
 
+        # No balance update by default
         response, result = self.unary_unary(
-            'UpdateBalance', account_mapper.map(acc))
-
-        self.assertEqual(response.balance, 100)
+            'FindOrCreateAccount', account_mapper.map(acc))
         self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertIsNone(acc._cached_balance)
+
+        # Update / set balance if required with metadata
+        response, result = self.unary_unary(
+            'FindOrCreateAccount', account_mapper.map(acc), meta=[
+                ('with_balance', True)
+            ])
+        self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.balance.value, '0.00')
+        self.book.session.refresh(acc)
+        self.assertEqual(acc._cached_balance, 0)
+
+        # Change the balance
+        self.transfer(acc, acc_1, 10)
+
+        # Balance not updated if not requested
+        response, result = self.unary_unary(
+            'FindOrCreateAccount', account_mapper.map(acc))
+        self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.balance.value, '')
+
+        # Balance updated if required
+        response, result = self.unary_unary(
+            'FindOrCreateAccount', account_mapper.map(acc), meta=[
+                ('with_balance', True)
+            ])
+        self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.balance.value, '-10.00')
 
     def test_find_or_create_account(self):
 

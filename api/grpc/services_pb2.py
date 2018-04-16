@@ -20,49 +20,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='services.proto',
   package='pieledger',
   syntax='proto3',
-  serialized_pb=_b('\n\x0eservices.proto\x12\tpieledger\x1a\x0cledger.proto\"K\n\x15\x41\x63\x63ountBalanceRequest\x12#\n\x07\x61\x63\x63ount\x18\x01 \x01(\x0b\x32\x12.pieledger.Account\x12\r\n\x05\x66orce\x18\x02 \x01(\x08\"{\n\x17TransactionQueryRequest\x12\r\n\x05guids\x18\x01 \x03(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bpage_number\x18\x03 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x04 \x01(\x05\x32\xa4\x03\n\tPieLedger\x12=\n\x13\x46indOrCreateAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x36\n\x0c\x41lterAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x45\n\rUpdateBalance\x12 .pieledger.AccountBalanceRequest\x1a\x12.pieledger.Account\x12\x43\n\x11\x43reateTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transaction\x12P\n\x10\x46indTransactions\x12\".pieledger.TransactionQueryRequest\x1a\x16.pieledger.Transaction0\x01\x12\x42\n\x10\x41lterTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transactionb\x06proto3')
+  serialized_pb=_b('\n\x0eservices.proto\x12\tpieledger\x1a\x0cledger.proto\"{\n\x17TransactionQueryRequest\x12\r\n\x05guids\x18\x01 \x03(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bpage_number\x18\x03 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x04 \x01(\x05\x32\xdd\x02\n\tPieLedger\x12=\n\x13\x46indOrCreateAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x36\n\x0c\x41lterAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x43\n\x11\x43reateTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transaction\x12P\n\x10\x46indTransactions\x12\".pieledger.TransactionQueryRequest\x1a\x16.pieledger.Transaction0\x01\x12\x42\n\x10\x41lterTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transactionb\x06proto3')
   ,
   dependencies=[ledger__pb2.DESCRIPTOR,])
 
 
-
-
-_ACCOUNTBALANCEREQUEST = _descriptor.Descriptor(
-  name='AccountBalanceRequest',
-  full_name='pieledger.AccountBalanceRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='account', full_name='pieledger.AccountBalanceRequest.account', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='force', full_name='pieledger.AccountBalanceRequest.force', index=1,
-      number=2, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=43,
-  serialized_end=118,
-)
 
 
 _TRANSACTIONQUERYREQUEST = _descriptor.Descriptor(
@@ -112,22 +74,13 @@ _TRANSACTIONQUERYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=120,
-  serialized_end=243,
+  serialized_start=43,
+  serialized_end=166,
 )
 
-_ACCOUNTBALANCEREQUEST.fields_by_name['account'].message_type = ledger__pb2._ACCOUNT
 _TRANSACTIONQUERYREQUEST.fields_by_name['account'].message_type = ledger__pb2._ACCOUNT
-DESCRIPTOR.message_types_by_name['AccountBalanceRequest'] = _ACCOUNTBALANCEREQUEST
 DESCRIPTOR.message_types_by_name['TransactionQueryRequest'] = _TRANSACTIONQUERYREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-AccountBalanceRequest = _reflection.GeneratedProtocolMessageType('AccountBalanceRequest', (_message.Message,), dict(
-  DESCRIPTOR = _ACCOUNTBALANCEREQUEST,
-  __module__ = 'services_pb2'
-  # @@protoc_insertion_point(class_scope:pieledger.AccountBalanceRequest)
-  ))
-_sym_db.RegisterMessage(AccountBalanceRequest)
 
 TransactionQueryRequest = _reflection.GeneratedProtocolMessageType('TransactionQueryRequest', (_message.Message,), dict(
   DESCRIPTOR = _TRANSACTIONQUERYREQUEST,
@@ -144,8 +97,8 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=246,
-  serialized_end=666,
+  serialized_start=169,
+  serialized_end=518,
   methods=[
   _descriptor.MethodDescriptor(
     name='FindOrCreateAccount',
@@ -166,18 +119,9 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
     options=None,
   ),
   _descriptor.MethodDescriptor(
-    name='UpdateBalance',
-    full_name='pieledger.PieLedger.UpdateBalance',
-    index=2,
-    containing_service=None,
-    input_type=_ACCOUNTBALANCEREQUEST,
-    output_type=ledger__pb2._ACCOUNT,
-    options=None,
-  ),
-  _descriptor.MethodDescriptor(
     name='CreateTransaction',
     full_name='pieledger.PieLedger.CreateTransaction',
-    index=3,
+    index=2,
     containing_service=None,
     input_type=ledger__pb2._TRANSACTION,
     output_type=ledger__pb2._TRANSACTION,
@@ -186,7 +130,7 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='FindTransactions',
     full_name='pieledger.PieLedger.FindTransactions',
-    index=4,
+    index=3,
     containing_service=None,
     input_type=_TRANSACTIONQUERYREQUEST,
     output_type=ledger__pb2._TRANSACTION,
@@ -195,7 +139,7 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='AlterTransaction',
     full_name='pieledger.PieLedger.AlterTransaction',
-    index=5,
+    index=4,
     containing_service=None,
     input_type=ledger__pb2._TRANSACTION,
     output_type=ledger__pb2._TRANSACTION,

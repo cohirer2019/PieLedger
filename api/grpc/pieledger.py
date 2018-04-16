@@ -18,6 +18,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     def FindOrCreateAccount(self, request, context):
         with open_book() as book:
             acc_mgr = AccountManager(book)
+            meta = dict(context.invocation_metadata())
             if request.guid:
                 account = acc_mgr.find_by_guid(guid=request.guid)
                 if not account:
@@ -29,12 +30,23 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                         request.parent.guid, request.name,
                         ledger_pb2.AccountType.Name(request.type))
                     if not account:
-                        account = acc_mgr.create_account(
-                            **account_model_mapper.map(request))
+                        # Start nested session as a commit will be emited,
+                        # which validates the account against the book
+                        with book.session.begin_nested():
+                            account = acc_mgr.create_account(
+                                **account_model_mapper.map(request))
                 except ValueError as e:
                     context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                     context.set_details(e.args[0])
-            return account_mapper.map(account)
+
+            ret = account_mapper.map(account)
+
+            # Update balance if required
+            if account and meta.get('with_balance', False):
+                ret.balance.value = str(account.get_balance(as_decimal=True))
+
+            book.save()
+            return ret
 
     def UpdateBalance(self, request, context):
         with open_book() as book:
