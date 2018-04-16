@@ -3,6 +3,8 @@
 def _patch_account():  #noqa
 
     import warnings
+    from decimal import Decimal
+
     from sqlalchemy import Column, BIGINT, inspect, exc as sa_exc
     from sqlalchemy.sql import func
     from piecash.core import Account, Split
@@ -39,7 +41,7 @@ def _patch_account():  #noqa
                 raise ValueError(
                     '{} has no parent but is not a root account'.format(self))
 
-    def _sa_get_balance(self, recurse=True, commodity=None, force=False):
+    def _sa_get_balance(self, recurse=True, commodity=None, as_decimal=False):
         """SQLAlchemy for calculating the splits and caching"""
 
         assert self.type != 'ROOT', \
@@ -75,6 +77,10 @@ def _patch_account():  #noqa
         if recurse and self.children:
             balance += sum(acc.get_balance(
                 recurse=recurse, commodity=commodity) for acc in self.children)
+
+        if as_decimal:
+            q = Decimal(1) / commodity.fraction
+            balance = Decimal(balance).quantize(q)
 
         return balance
 

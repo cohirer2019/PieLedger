@@ -19,19 +19,25 @@ enum AccountType {
   EQUITY = 13;
 }
 
+message MonetaryAmount {
+  string value = 1;
+  sint64 num = 2;
+  int32 denom = 3;
+}
+
 message Account {
   string guid = 1;
   string name = 2;
   AccountType type = 3;
   Account parent = 4;
   bool placeholder = 5;
-  sint32 balance = 6;
+  MonetaryAmount balance = 6;
 }
 
 message Split {
   string guid = 1;
   Account account = 2;
-  sint32 value = 3;
+  MonetaryAmount amount = 3;
   string memo = 4;
 }
 

@@ -25,11 +25,6 @@ class PieLedgerStub(object):
         request_serializer=ledger__pb2.Account.SerializeToString,
         response_deserializer=ledger__pb2.Account.FromString,
         )
-    self.UpdateBalance = channel.unary_unary(
-        '/pieledger.PieLedger/UpdateBalance',
-        request_serializer=services__pb2.AccountBalanceRequest.SerializeToString,
-        response_deserializer=ledger__pb2.Account.FromString,
-        )
     self.CreateTransaction = channel.unary_unary(
         '/pieledger.PieLedger/CreateTransaction',
         request_serializer=ledger__pb2.Transaction.SerializeToString,
@@ -59,13 +54,6 @@ class PieLedgerServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def AlterAccount(self, request, context):
-    # missing associated documentation comment in .proto file
-    pass
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
-
-  def UpdateBalance(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -104,11 +92,6 @@ def add_PieLedgerServicer_to_server(servicer, server):
       'AlterAccount': grpc.unary_unary_rpc_method_handler(
           servicer.AlterAccount,
           request_deserializer=ledger__pb2.Account.FromString,
-          response_serializer=ledger__pb2.Account.SerializeToString,
-      ),
-      'UpdateBalance': grpc.unary_unary_rpc_method_handler(
-          servicer.UpdateBalance,
-          request_deserializer=services__pb2.AccountBalanceRequest.FromString,
           response_serializer=ledger__pb2.Account.SerializeToString,
       ),
       'CreateTransaction': grpc.unary_unary_rpc_method_handler(

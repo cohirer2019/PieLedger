@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='ledger.proto',
   package='pieledger',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cledger.proto\x12\tpieledger\"\x95\x01\n\x07\x41\x63\x63ount\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12$\n\x04type\x18\x03 \x01(\x0e\x32\x16.pieledger.AccountType\x12\"\n\x06parent\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bplaceholder\x18\x05 \x01(\x08\x12\x0f\n\x07\x62\x61lance\x18\x06 \x01(\x11\"W\n\x05Split\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12\r\n\x05value\x18\x03 \x01(\x11\x12\x0c\n\x04memo\x18\x04 \x01(\t\"e\n\x0bTransaction\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x11\n\treference\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12 \n\x06splits\x18\x04 \x03(\x0b\x32\x10.pieledger.Split*\xb7\x01\n\x0b\x41\x63\x63ountType\x12\x08\n\x04ROOT\x10\x00\x12\x0e\n\nRECEIVABLE\x10\x01\x12\n\n\x06MUTUAL\x10\x02\x12\x08\n\x04\x43\x41SH\x10\x03\x12\t\n\x05\x41SSET\x10\x04\x12\x08\n\x04\x42\x41NK\x10\x05\x12\t\n\x05STOCK\x10\x06\x12\n\n\x06\x43REDIT\x10\x07\x12\r\n\tLIABILITY\x10\x08\x12\x0b\n\x07PAYABLE\x10\t\x12\n\n\x06INCOME\x10\n\x12\x0b\n\x07\x45XPENSE\x10\x0b\x12\x0b\n\x07TRADING\x10\x0c\x12\n\n\x06\x45QUITY\x10\rb\x06proto3')
+  serialized_pb=_b('\n\x0cledger.proto\x12\tpieledger\";\n\x0eMonetaryAmount\x12\r\n\x05value\x18\x01 \x01(\t\x12\x0b\n\x03num\x18\x02 \x01(\x12\x12\r\n\x05\x64\x65nom\x18\x03 \x01(\x05\"\xb0\x01\n\x07\x41\x63\x63ount\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12$\n\x04type\x18\x03 \x01(\x0e\x32\x16.pieledger.AccountType\x12\"\n\x06parent\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bplaceholder\x18\x05 \x01(\x08\x12*\n\x07\x62\x61lance\x18\x06 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\"s\n\x05Split\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12)\n\x06\x61mount\x18\x03 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x0c\n\x04memo\x18\x04 \x01(\t\"e\n\x0bTransaction\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x11\n\treference\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12 \n\x06splits\x18\x04 \x03(\x0b\x32\x10.pieledger.Split*\xb7\x01\n\x0b\x41\x63\x63ountType\x12\x08\n\x04ROOT\x10\x00\x12\x0e\n\nRECEIVABLE\x10\x01\x12\n\n\x06MUTUAL\x10\x02\x12\x08\n\x04\x43\x41SH\x10\x03\x12\t\n\x05\x41SSET\x10\x04\x12\x08\n\x04\x42\x41NK\x10\x05\x12\t\n\x05STOCK\x10\x06\x12\n\n\x06\x43REDIT\x10\x07\x12\r\n\tLIABILITY\x10\x08\x12\x0b\n\x07PAYABLE\x10\t\x12\n\n\x06INCOME\x10\n\x12\x0b\n\x07\x45XPENSE\x10\x0b\x12\x0b\n\x07TRADING\x10\x0c\x12\n\n\x06\x45QUITY\x10\rb\x06proto3')
 )
 
 _ACCOUNTTYPE = _descriptor.EnumDescriptor(
@@ -88,8 +88,8 @@ _ACCOUNTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=372,
-  serialized_end=555,
+  serialized_start=488,
+  serialized_end=671,
 )
 _sym_db.RegisterEnumDescriptor(_ACCOUNTTYPE)
 
@@ -109,6 +109,51 @@ EXPENSE = 11
 TRADING = 12
 EQUITY = 13
 
+
+
+_MONETARYAMOUNT = _descriptor.Descriptor(
+  name='MonetaryAmount',
+  full_name='pieledger.MonetaryAmount',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='value', full_name='pieledger.MonetaryAmount.value', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='num', full_name='pieledger.MonetaryAmount.num', index=1,
+      number=2, type=18, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='denom', full_name='pieledger.MonetaryAmount.denom', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=27,
+  serialized_end=86,
+)
 
 
 _ACCOUNT = _descriptor.Descriptor(
@@ -155,8 +200,8 @@ _ACCOUNT = _descriptor.Descriptor(
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='balance', full_name='pieledger.Account.balance', index=5,
-      number=6, type=17, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -172,8 +217,8 @@ _ACCOUNT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=28,
-  serialized_end=177,
+  serialized_start=89,
+  serialized_end=265,
 )
 
 
@@ -199,9 +244,9 @@ _SPLIT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='pieledger.Split.value', index=2,
-      number=3, type=17, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      name='amount', full_name='pieledger.Split.amount', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -224,8 +269,8 @@ _SPLIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=179,
-  serialized_end=266,
+  serialized_start=267,
+  serialized_end=382,
 )
 
 
@@ -276,19 +321,29 @@ _TRANSACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=268,
-  serialized_end=369,
+  serialized_start=384,
+  serialized_end=485,
 )
 
 _ACCOUNT.fields_by_name['type'].enum_type = _ACCOUNTTYPE
 _ACCOUNT.fields_by_name['parent'].message_type = _ACCOUNT
+_ACCOUNT.fields_by_name['balance'].message_type = _MONETARYAMOUNT
 _SPLIT.fields_by_name['account'].message_type = _ACCOUNT
+_SPLIT.fields_by_name['amount'].message_type = _MONETARYAMOUNT
 _TRANSACTION.fields_by_name['splits'].message_type = _SPLIT
+DESCRIPTOR.message_types_by_name['MonetaryAmount'] = _MONETARYAMOUNT
 DESCRIPTOR.message_types_by_name['Account'] = _ACCOUNT
 DESCRIPTOR.message_types_by_name['Split'] = _SPLIT
 DESCRIPTOR.message_types_by_name['Transaction'] = _TRANSACTION
 DESCRIPTOR.enum_types_by_name['AccountType'] = _ACCOUNTTYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+MonetaryAmount = _reflection.GeneratedProtocolMessageType('MonetaryAmount', (_message.Message,), dict(
+  DESCRIPTOR = _MONETARYAMOUNT,
+  __module__ = 'ledger_pb2'
+  # @@protoc_insertion_point(class_scope:pieledger.MonetaryAmount)
+  ))
+_sym_db.RegisterMessage(MonetaryAmount)
 
 Account = _reflection.GeneratedProtocolMessageType('Account', (_message.Message,), dict(
   DESCRIPTOR = _ACCOUNT,
