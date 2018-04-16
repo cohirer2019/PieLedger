@@ -18,12 +18,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
         self.assertEqual(response.balance, 100)
         self.assertIs(result.code, grpc.StatusCode.OK)
 
-    def test_findorcreate_account(self):
-
-        # guid找不到account，返回not found
-        _, result = self.unary_unary(
-            'FindOrCreateAccount', ledger_pb2.Account(guid='123456'))
-        self.assertIs(result.code, grpc.StatusCode.NOT_FOUND)
+    def test_find_or_create_account(self):
 
         book = self.book
         root_account_guid = book.root_account.guid
@@ -61,3 +56,31 @@ class GrpcAccountTest(PieLedgerGrpcTest):
         self.assertEqual(response.name, 'test_account')
         self.assertIs(result.code, grpc.StatusCode.OK)
         self.assertEqual(len(book.accounts), 1)
+
+    def test_find_or_create_account_failed(self):
+
+        # guid找不到account，返回not found
+        _, result = self.unary_unary(
+            'FindOrCreateAccount', ledger_pb2.Account(guid='123456'))
+        self.assertIs(result.code, grpc.StatusCode.NOT_FOUND)
+
+        # No parent defined
+        response, result = self.unary_unary(
+            'FindOrCreateAccount',
+            ledger_pb2.Account(
+                name='test_account',
+                type=ledger_pb2.AccountType.Value('INCOME')
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertIn('has no parent', result.detail)
+
+        # Non-exist parent
+        response, result = self.unary_unary(
+            'FindOrCreateAccount',
+            ledger_pb2.Account(
+                name='test_account',
+                type=ledger_pb2.AccountType.Value('INCOME'),
+                parent=ledger_pb2.Account(guid='dummy')
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertIn('not found', result.detail)

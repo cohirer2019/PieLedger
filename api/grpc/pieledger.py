@@ -1,43 +1,39 @@
 # -*- coding:utf-8 -*-
 from piecash.core import Account
 import grpc
+from sqlalchemy import exc
 
 from core.book import open_book
 from core.account import AccountManager
 from core.transaction import TransactionManager
 
-from .mappers import account_mapper, account_model_mapper, \
-    transaction_model_mapper
 from . import ledger_pb2
 from . import services_pb2_grpc
+from .mappers import account_mapper, account_model_mapper, \
+    transaction_model_mapper
 
 
 class PieLedger(services_pb2_grpc.PieLedgerServicer):
 
     def FindOrCreateAccount(self, request, context):
         with open_book() as book:
-            request_args = account_model_mapper.map(request)
             acc_mgr = AccountManager(book)
-            if request_args.get('guid'):
-                account = acc_mgr.find_by_guid(guid=request_args.get('guid'))
+            if request.guid:
+                account = acc_mgr.find_by_guid(guid=request.guid)
                 if not account:
                     context.set_code(grpc.StatusCode.NOT_FOUND)
                     context.set_details("account %s not found" % request.guid)
-                    return ledger_pb2.Account()
-                return account_mapper.map(account)
             else:
-                account_parent = acc_mgr.find_by_guid(
-                    request_args.get('parent_guid'))
-                if not account_parent:
-                    context.set_code(grpc.StatusCode.NOT_FOUND)
-                    context.set_details("account %s not found" % request.guid)
-                    return ledger_pb2.Account()
-                account = acc_mgr.find_by_parent(
-                    account_parent, request_args.get('name'),
-                    request_args.get('type'))
-                if not account:
-                    account = acc_mgr.create_account(
-                        account_parent, **request_args)
+                try:
+                    account = acc_mgr.find_by_parent(
+                        request.parent.guid, request.name,
+                        ledger_pb2.AccountType.Name(request.type))
+                    if not account:
+                        account = acc_mgr.create_account(
+                            **account_model_mapper.map(request))
+                except ValueError as e:
+                    context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                    context.set_details(e.args[0])
             return account_mapper.map(account)
 
     def UpdateBalance(self, request, context):

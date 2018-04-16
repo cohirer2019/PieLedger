@@ -7,21 +7,21 @@ from .base import BaseManager
 class AccountManager(BaseManager):
 
     def find_by_guid(self, guid):
-        account = self.session.query(Account).filter(
-            Account.guid == guid).first()
-        return account
+        return self.book.query(Account).get(guid)
 
-    def find_by_parent(self, parent, name, type):
-        account = self.session.query(Account).filter(
-            Account.parent == parent,
+    def find_by_parent(self, parent_guid, name, _type):
+        return self.book.query(Account).filter(
+            Account.parent_guid == parent_guid,
             Account.name == name,
-            Account.type == type).first()
-        return account
+            Account.type == _type).first()
 
-    def create_account(self, parent, **args):
-        args['commodity'] = self.book.commodities.get(mnemonic="EUR")
-        args['parent'] = parent
-        args.pop('parent_guid')
-        account = Account(**args)
+    def create_account(self, **kw):
+        kw['commodity'] = self.book.commodities.get(mnemonic="EUR")
+        parent_guid = kw.pop('parent_guid', None)
+        if parent_guid:
+            kw['parent'] = self.find_by_guid(parent_guid)
+            if not kw['parent']:
+                raise ValueError('Parent account<%s> not found' % parent_guid)
+        account = Account(**kw)
         self.book.save()
         return account
