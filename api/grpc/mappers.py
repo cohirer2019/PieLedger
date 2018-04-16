@@ -5,7 +5,7 @@ from mapperpy.attributes_util import get_attributes as _get_attributes, \
     AttributesCache as _AttributesCache
 from piecash import core
 
-import ledger_pb2
+from . import ledger_pb2
 
 
 def get_attributes(obj):

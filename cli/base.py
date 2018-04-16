@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 import click
 
-from initialize import genesis
-from grpc import grpc
+from .initialize import genesis
+from .grpc import grpc
 
 
 @click.group()

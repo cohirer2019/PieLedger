@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from piecash.core import Account
 
-from base import BaseManager
+from .base import BaseManager
 
 
 class AccountManager(BaseManager):
