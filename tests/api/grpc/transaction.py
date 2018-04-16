@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import time
+
 import grpc
 from piecash.core import Split, Transaction
 
@@ -37,4 +39,23 @@ class TransactionTest(PieLedgerGrpcTest):
                 result_per_page=1))
 
         self.assertEqual(next(response).guid, transactionid1)
+        self.assertIs(result.code, grpc.StatusCode.OK)
+
+        time.sleep(1)
+        transaction2 = self.transfer(acc1, acc2, 15)
+        book.save()
+        time.sleep(1)
+        transaction3 = self.transfer(acc1, acc2, 20)
+        book.save()
+        transactionid2 = transaction2.guid
+        transactionid3 = transaction3.guid
+
+        response, result = self.unary_stream(
+            'FindTransactions', services_pb2.TransactionQueryRequest(
+                guids=[transactionid1, transactionid2, transactionid3],
+                account=ledger_pb2.Account(guid=accid),
+                page_number=1,
+                result_per_page=1))
+
+        self.assertEqual(next(response).guid, transactionid2)
         self.assertIs(result.code, grpc.StatusCode.OK)
