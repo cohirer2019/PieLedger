@@ -61,7 +61,8 @@ transaction_mapper = OneWayMapper(ledger_pb2.Transaction)
 split_mapper = OneWayMapper(ledger_pb2.Split)
 split_mapper = split_mapper.nested_mapper(account_mapper, core.Account)
 split_mapper = split_mapper.target_initializers({
-    'value': lambda obj: int(obj.value),
+    'amount': lambda obj: ledger_pb2.MonetaryAmount(
+        value=str(obj.value), num=obj._value_num, denom=obj._value_denom)
 })
 
 

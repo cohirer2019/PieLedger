@@ -37,7 +37,6 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                 except ValueError as e:
                     context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                     context.set_details(e.args[0])
-
             ret = account_mapper.map(account)
 
             # Update balance if required
@@ -46,6 +45,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
 
             book.save()
             return ret
+            return account_mapper.map(account)
 
     def UpdateBalance(self, request, context):
         with open_book() as book:
@@ -66,7 +66,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             if not transactions:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details("transaction %s not found")
-                return ledger_pb2.Transaction()
+                return
             context.send_initial_metadata((('num', num),))
             for transaction in transactions:
                 yield transaction_mapper.map(transaction)

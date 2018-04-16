@@ -25,12 +25,7 @@ class TransactionTest(PieLedgerGrpcTest):
         self.assertIs(result.code, grpc.StatusCode.NOT_FOUND)
 
         acc2 = self.make_account('Acc 2', 'ASSET')
-        transaction1 = Transaction(
-            currency=book.default_currency,
-            description='test_transaction',
-            splits=[
-                Split(account=acc1, value=12),
-                Split(account=acc2, value=-12)])
+        transaction1 = self.transfer(acc1, acc2, 12)
         book.save()
         transactionid1 = transaction1.guid
 
