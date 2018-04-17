@@ -2,7 +2,7 @@
 import warnings
 
 import piecash
-from piecash.core import Account
+from piecash.core import Account, Transaction
 from sqlalchemy import schema
 
 from .config import ledger_config
@@ -26,7 +26,10 @@ def create_book(**kw):
         warnings.simplefilter("ignore")
         # Add additional indexes used by pieledger
         engine = book.session.get_bind()
-        schema.Index('ix_account_name', Account.name).create(bind=engine)
+        for key, column in (
+                ('ix_account_name', Account.name),
+                ('ix_transactions_enter_date', Transaction.enter_date)):
+            schema.Index(key, column).create(bind=engine)
 
 
 def open_book(readonly=False):
