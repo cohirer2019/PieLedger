@@ -87,11 +87,11 @@ class BaseTestCase(unittest.TestCase):
         return Account(name, _type, commodity=commodity, parent=parent, **kw)
 
     @staticmethod
-    def transfer(from_acc, to_acc, value):
+    def transfer(from_acc, to_acc, value, enter_date=None):
         currency = from_acc.commodity
         assert currency == to_acc.commodity, \
             'Commodities of accounts should be the same'
-        return Transaction(currency=currency, splits=[
+        return Transaction(enter_date=enter_date, currency=currency, splits=[
             Split(account=from_acc, value=-value),
             Split(account=to_acc, value=value),
         ])
