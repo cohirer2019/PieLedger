@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 from datetime import datetime, timedelta
-import unittest
 
 import grpc
 from piecash.core import Split
@@ -65,7 +64,6 @@ class TransactionTest(PieLedgerGrpcTest):
         self.assertEqual(next(response).guid, transactionid2)
         self.assertIs(result.code, grpc.StatusCode.OK)
 
-    @unittest.skip('demo')
     def test_create_transaction(self):
         book = self.book
         acc1 = self.make_account('Acc 1', 'ASSET')

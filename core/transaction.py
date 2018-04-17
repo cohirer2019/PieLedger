@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from sqlalchemy import func, distinct
-from piecash.core import Transaction, Split
+from piecash.core import Transaction, Split, Account
 
 from .base import BaseManager
 
@@ -31,3 +31,13 @@ class TransactionManager(BaseManager):
             func.count(distinct(Split.transaction_guid))).filter(*filters)
 
         return transactions_page, count_query.scalar()
+
+    def create_transaction(self, **kwagrs):
+        splits = kwagrs.pop('splits')
+        kwagrs['splits'] = []
+        kwagrs['currency'] = self.book.default_currency
+        for split in splits:
+            account_guid = split.pop('account')
+            split['account'] = self.book.query(Account).get(account_guid)
+            kwagrs['splits'].append(Split(**split))
+        return Transaction(**kwagrs)
