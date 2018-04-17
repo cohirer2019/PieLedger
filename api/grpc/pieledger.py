@@ -1,13 +1,12 @@
 # -*- coding:utf-8 -*-
 from piecash.core import Account
 import grpc
-from sqlalchemy import exc
 
 from core.book import open_book
 from core.account import AccountManager
 from core.transaction import TransactionManager
 from .mappers import account_mapper, account_model_mapper, \
-    transaction_model_mapper, transaction_mapper
+    transaction_mapper
 from . import ledger_pb2
 from . import services_pb2_grpc
 
@@ -45,7 +44,6 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
 
             book.save()
             return ret
-            return account_mapper.map(account)
 
     def UpdateBalance(self, request, context):
         with open_book() as book:
