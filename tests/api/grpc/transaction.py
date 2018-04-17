@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
-import time
+from datetime import datetime, timedelta
 
 import grpc
-from piecash.core import Split, Transaction
+from piecash.core import Split
 
 from api.grpc import ledger_pb2, services_pb2
 from .base import PieLedgerGrpcTest
@@ -27,7 +27,8 @@ class TransactionTest(PieLedgerGrpcTest):
         self.assertIs(result.code, grpc.StatusCode.NOT_FOUND)
 
         acc2 = self.make_account('Acc 2', 'ASSET')
-        transaction1 = self.transfer(acc1, acc2, 12)
+        transaction1 = self.transfer(
+            acc1, acc2, 12, datetime.now() - timedelta(minutes=2))
         book.save()
         transactionid1 = transaction1.guid
 
@@ -41,11 +42,11 @@ class TransactionTest(PieLedgerGrpcTest):
         self.assertEqual(next(response).guid, transactionid1)
         self.assertIs(result.code, grpc.StatusCode.OK)
 
-        time.sleep(1)
-        transaction2 = self.transfer(acc1, acc2, 15)
-        book.save()
-        time.sleep(1)
-        transaction3 = self.transfer(acc1, acc2, 20)
+        transaction2 = self.transfer(
+            acc1, acc2, 15, datetime.now() - timedelta(minutes=1))
+        transaction3 = self.transfer(acc1, acc2, 20, datetime.now())
+        transaction3.splits.extend(
+            [Split(account=acc1, value=25), Split(account=acc2, value=-25)])
         book.save()
         transactionid2 = transaction2.guid
         transactionid3 = transaction3.guid
@@ -57,5 +58,8 @@ class TransactionTest(PieLedgerGrpcTest):
                 page_number=1,
                 result_per_page=1))
 
+        intinal_metadata = result.intinal_metadata
+        metadata = dict((x, y) for x, y in intinal_metadata)
+        self.assertEqual(metadata.get('num'), 3)
         self.assertEqual(next(response).guid, transactionid2)
         self.assertIs(result.code, grpc.StatusCode.OK)
