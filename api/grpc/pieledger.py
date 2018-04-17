@@ -6,7 +6,7 @@ from core.book import open_book
 from core.account import AccountManager
 from core.transaction import TransactionManager
 from .mappers import account_mapper, account_model_mapper, \
-    transaction_mapper
+    transaction_mapper, transaction_model_mapper
 from . import ledger_pb2
 from . import services_pb2_grpc
 
@@ -68,3 +68,10 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             context.send_initial_metadata((('num', num),))
             for transaction in transactions:
                 yield transaction_mapper.map(transaction)
+
+    def CreateTransaction(self, request, context):
+        with open_book() as book:
+            trans_mgr = TransactionManager(book)
+            transaction = trans_mgr.create_transaction(
+                **transaction_model_mapper.map(request))
+            return transaction_mapper.map(transaction)

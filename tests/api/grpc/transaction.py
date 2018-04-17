@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from datetime import datetime, timedelta
+import unittest
 
 import grpc
 from piecash.core import Split
@@ -62,4 +63,35 @@ class TransactionTest(PieLedgerGrpcTest):
         metadata = dict((x, y) for x, y in intinal_metadata)
         self.assertEqual(metadata.get('num'), 3)
         self.assertEqual(next(response).guid, transactionid2)
+        self.assertIs(result.code, grpc.StatusCode.OK)
+
+    @unittest.skip('demo')
+    def test_create_transaction(self):
+        book = self.book
+        acc1 = self.make_account('Acc 1', 'ASSET')
+        acc2 = self.make_account('Acc 2', 'ASSET')
+        book.save()
+
+        response, result = self.unary_unary(
+            'CreateTransaction', ledger_pb2.Transaction(
+                reference='10',
+                splits=[
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='5',
+                            num=500,
+                            denom=100),
+                        memo='use CNY paid'
+                    ),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5',
+                            num=-500,
+                            denom=100),
+                        memo='use CNY paid')
+                ],
+                description='CV_paid'
+            ))
         self.assertIs(result.code, grpc.StatusCode.OK)

@@ -20,3 +20,7 @@ class TransactionManager(BaseManager):
         transactions_page = transactions.offset(
             page_number * result_per_page).limit(result_per_page).all()
         return transactions_page, transactions.count()
+
+    def create_transaction(self, **kwagrs):
+        transaction = Transaction(kwagrs)
+        return transaction
