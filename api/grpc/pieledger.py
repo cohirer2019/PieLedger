@@ -59,7 +59,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
         with open_book() as book:
             trans_mgr = TransactionManager(book)
             transactions, num = trans_mgr.find_transaction(
-                request.guids, request.account, request.page_number,
+                request.guids, request.account.guid, request.page_number,
                 request.result_per_page)
             if not transactions:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
