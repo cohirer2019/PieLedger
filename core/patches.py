@@ -104,23 +104,6 @@ def _reg_invalidate_balance():
     event.listen(Session, 'before_flush', _invalidate_balance)
 
 
-def _patch_sessionmaker():
-
-    from functools import partial
-    from sqlalchemy import func, orm
-    from sqlalchemy.orm import sessionmaker as _sessionmaker, Query as _Query
-
-    class Query(_Query):
-        def count(self):
-            # Override SA orm count to skip use of subquery
-            count_query = self.statement.with_only_columns(
-                [func.count()]).order_by(None)
-            return self.session.execute(count_query).scalar()
-
-    orm.sessionmaker = partial(_sessionmaker, query_cls=Query)
-
-
 def patch_piecash():
-    _patch_sessionmaker()
     _patch_account()
     _reg_invalidate_balance()
