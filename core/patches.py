@@ -93,12 +93,13 @@ def _patch_account():  #noqa
 
 def _patch_split():
 
+    from datetime import datetime
     from sqlalchemy import Column, Float
     from piecash.sa_extra import _DateTime
     from piecash.core import Split
 
     Split.running_total = Column(Float(as_decimal=True))
-    Split.enter_date = Column(_DateTime, index=True)
+    Split.enter_date = Column(_DateTime, index=True, default=datetime.now)
 
 
 def _patch_get_engine():
