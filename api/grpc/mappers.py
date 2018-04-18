@@ -69,7 +69,7 @@ split_mapper = split_mapper.target_initializers({
 split_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Split.__table__.columns.keys()})
 split_model_mapper = split_model_mapper.target_initializers({
-    'value': lambda obj: int(obj.amount.value),
+    'value': lambda obj: obj.amount.value and int(obj.amount.value),
     'account': lambda obj: obj.account.guid
 })
 
