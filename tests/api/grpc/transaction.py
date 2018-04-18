@@ -6,14 +6,15 @@ from piecash.core import Split
 
 from api.grpc import ledger_pb2, services_pb2
 from .base import PieLedgerGrpcTest
+from ...core.base import book_context
 
 
 class TransactionTest(PieLedgerGrpcTest):
 
-    def test_find_transactions(self):
+    @book_context
+    def test_find_transactions(self, book):
 
-        book = self.book
-        acc1 = self.make_account('Acc 1', 'ASSET')
+        acc1 = self.make_account(book, 'Acc 1', 'ASSET')
         book.save()
         accid = acc1.guid
 
@@ -26,7 +27,7 @@ class TransactionTest(PieLedgerGrpcTest):
 
         self.assertIs(result.code, grpc.StatusCode.NOT_FOUND)
 
-        acc2 = self.make_account('Acc 2', 'ASSET')
+        acc2 = self.make_account(book, 'Acc 2', 'ASSET')
         transaction1 = self.transfer(
             acc1, acc2, 12, datetime.now() - timedelta(minutes=2))
         book.save()

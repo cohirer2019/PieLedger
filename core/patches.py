@@ -5,7 +5,7 @@ def _patch_account():  #noqa
     import warnings
     from decimal import Decimal
 
-    from sqlalchemy import Column, BIGINT, inspect, exc as sa_exc
+    from sqlalchemy import Column, Float, inspect, exc as sa_exc
     from sqlalchemy.sql import func
     from piecash.core import Account, Split
     from piecash.core.account import ACCOUNT_TYPES, \
@@ -50,10 +50,9 @@ def _patch_account():  #noqa
         if commodity is None:
             commodity = self.commodity
 
-        if inspect(self).persistent and self._cached_balance is not None:
-            # Only use cached value if the account is persistent
+        if self._cached_balance is not None:
             balance = self._cached_balance
-        else:
+        elif inspect(self).persistent:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=sa_exc.SAWarning)
                 balance = (self.commodity.book.query(
@@ -62,6 +61,8 @@ def _patch_account():  #noqa
                     Split.account_guid == self.guid
                 ).scalar() or 0) * self.sign
             self._cached_balance = balance
+        else:
+            balance = 0
 
         if commodity != self.commodity:
             try:
@@ -86,24 +87,77 @@ def _patch_account():  #noqa
 
     Account.validate = _sa_validate
     Account.get_balance = _sa_get_balance
-    Account._cached_balance = Column('cached_balance', BIGINT())
+    Account._cached_balance = Column(
+        'cached_balance', Float(as_decimal=True))
+
+
+def _patch_split():
+
+    from sqlalchemy import Column, Float
+    from piecash.sa_extra import _DateTime
+    from piecash.core import Split
+
+    Split.running_total = Column(Float(as_decimal=True))
+    Split.enter_date = Column(_DateTime, index=True)
+
+
+def _patch_get_engine():
+
+    from sqlalchemy import event, create_engine as sa_create_engine
+    from piecash.core import session
+
+    def _create_piecash_engine(uri_conn, **kw):
+        connect_args = kw.pop('connect_args', {})
+        if uri_conn.startswith('sqlite:'):
+            # Turn off thread check
+            connect_args['check_same_thread'] = False
+        else:
+            kw['isolation_level'] = 'READ COMMITTED'
+
+        engine = sa_create_engine(uri_conn, connect_args=connect_args, **kw)
+        if engine.name == 'sqlite':
+            @event.listens_for(engine, "connect")
+            def do_connect(dbapi_connection, connection_record):
+                # disable pysqlite's emitting of the BEGIN statement entirely.
+                # also stops it from emitting COMMIT before any DDL.
+                dbapi_connection.isolation_level = None
+
+            @event.listens_for(engine, "begin")
+            def do_begin(conn):
+                # emit our own BEGIN
+                conn.execute("BEGIN")
+        return engine
+
+    session.create_piecash_engine = _create_piecash_engine
 
 
 def _reg_invalidate_balance():
 
-    from itertools import chain
     from sqlalchemy import event
-    from piecash.core import Split
+    from piecash.core import Split, Account
     from piecash.sa_extra import Session
 
     def _invalidate_balance(session, context, _):
-        for obj in chain(session.new, session.dirty, session.deleted):
-            if isinstance(obj, Split):
-                obj.account._cached_balance = None
+        accounts = set()
+        for obj in session.new:
+            if not isinstance(obj, Split):
+                continue
+            # Caculate running total for the split and log it as cached balance
+            acc = obj.account
+            if acc not in accounts:
+                accounts.add(acc)
+                acc._cached_balance = None
+                # Lock the account for running total calculation
+                session.query(Account._cached_balance).filter(
+                    Account.guid == acc.guid).with_for_update().scalar()
+            acc._cached_balance = obj.running_total = \
+                acc.get_balance(as_decimal=True, recurse=False) + obj.quantity
 
     event.listen(Session, 'before_flush', _invalidate_balance)
 
 
 def patch_piecash():
+    _patch_get_engine()
     _patch_account()
+    _patch_split()
     _reg_invalidate_balance()
