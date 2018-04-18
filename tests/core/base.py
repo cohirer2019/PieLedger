@@ -1,11 +1,14 @@
 # -*- coding:utf-8 -*-
 import unittest
+from contextlib import contextmanager
+from functools import wraps
 
-from sqlalchemy import event, create_engine as sa_create_engine
+import six
+from sqlalchemy import event, inspect
 from piecash.core import Account, Transaction, Split, \
     session as piecash_session
-from piecash.core.session import adapt_session as _adapt_session
-from piecash.sa_extra import create_piecash_engine as _create_engine
+from piecash.core.session import adapt_session as _adapt_session, \
+    create_piecash_engine as _create_engine
 
 from core.book import open_book
 
@@ -22,43 +25,58 @@ def adapt_session(session, book, readonly):
     _adapt_session(session, book, readonly)
 
 
-def _get_engine(uri_conn, **kw):
-    connect_args = kw.pop('connect_args', {})
-    if uri_conn.startswith('sqlite:'):
-        # Turn off thread check
-        connect_args['check_same_thread'] = False
-    engine = sa_create_engine(uri_conn, connect_args=connect_args, **kw)
+@contextmanager
+def _test_context(conn):
+    trans = conn.begin()
+    yield
+    trans.rollback()
 
-    if engine.name == 'sqlite':
-        @event.listens_for(engine, "connect")
-        def do_connect(dbapi_connection, connection_record):
-            # disable pysqlite's emitting of the BEGIN statement entirely.
-            # also stops it from emitting COMMIT before any DDL.
-            dbapi_connection.isolation_level = None
 
-        @event.listens_for(engine, "begin")
-        def do_begin(conn):
-            # emit our own BEGIN
-            conn.execute("BEGIN")
+@contextmanager
+def _real_context():
+    _tmp_adapt_session = piecash_session.adapt_session
+    _tmp_piecash_engine = piecash_session.create_piecash_engine
+    piecash_session.adapt_session = _adapt_session
+    piecash_session.create_piecash_engine = _create_engine
+    yield
+    piecash_session.adapt_session = _tmp_adapt_session
+    piecash_session.create_piecash_engine = _tmp_piecash_engine
 
-    return engine
+
+def book_context(*args, **kw):
+    join_session = kw.get('join_session', True)
+
+    def decorator(func):
+        @wraps(func)
+        def func_wraper(self, *a, **ka):
+            if not join_session:
+                # Order matters
+                with _real_context(), open_book() as book:
+                    return func(self, book, *a, **ka)
+            with open_book() as book, _test_context(book.session.get_bind()):
+                return func(self, book, *a, **ka)
+        return func_wraper
+
+    if args and callable(args[0]):
+        return decorator(args[0])
+    return decorator
 
 
 class BaseTestCase(unittest.TestCase):
 
     @classmethod
+    def create_piecash_engine(cls, uri_conn, **kw):
+        """Setup to allow revert any db changes after test"""
+        if not hasattr(cls, '_connection'):
+            engine = _create_engine(uri_conn, **kw)
+            cls._connection = engine.connect()
+            cls._connection.url = uri_conn
+            cls._root_trans = cls._connection.begin()
+        return cls._connection
+
+    @classmethod
     def setUpClass(cls):
-
-        # Setup to allow revert any db changes after test
-        def create_piecash_engine(uri_conn, **kw):
-            if not hasattr(cls, '_connection'):
-                engine = _get_engine(uri_conn, **kw)
-                cls._connection = engine.connect()
-                cls._connection.url = uri_conn
-                cls._root_trans = cls._connection.begin()
-            return cls._connection
-
-        piecash_session.create_piecash_engine = create_piecash_engine
+        piecash_session.create_piecash_engine = cls.create_piecash_engine
         piecash_session.adapt_session = adapt_session
 
     @classmethod
@@ -71,19 +89,12 @@ class BaseTestCase(unittest.TestCase):
         piecash_session.adapt_session = _adapt_session
         piecash_session.create_piecash_engine = _create_engine
 
-    def setUp(self):
-        self.book = open_book()
-        self._trans = self._connection.begin()
-
-    def tearDown(self):
-        self.book.close()
-        self._trans.rollback()
-
-    def make_account(self, name, _type, commodity=None, parent=None, **kw):
+    @staticmethod
+    def make_account(book, name, _type, commodity=None, parent=None, **kw):
         if not commodity:
-            commodity = self.book.default_currency
+            commodity = book.default_currency
         if not parent:
-            parent = self.book.root_account
+            parent = book.root_account
         return Account(name, _type, commodity=commodity, parent=parent, **kw)
 
     @staticmethod
@@ -95,3 +106,20 @@ class BaseTestCase(unittest.TestCase):
             Split(account=from_acc, value=-value),
             Split(account=to_acc, value=value),
         ])
+
+    @book_context(join_session=False)
+    def _delete(self, book, *args):
+        for o in args:
+            o = book.session.merge(o)
+            if not inspect(o).key:
+                continue
+            book.delete(o)
+        book.save()
+
+    def deleteAfter(self, *args):
+        self.addCleanup(self._delete, *args)
+
+    def assertCountEqual(self, *args):
+        if six.PY2:
+            return six.assertCountEqual(self, *args)
+        super(BaseTestCase, self).assertCountEqual(*args)

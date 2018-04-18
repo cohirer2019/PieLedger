@@ -1,4 +1,6 @@
 git+http://dev.smart4e.com/cohirer/grpcio_testing.git@v1.10.1#egg=grpcio_testing
+six>=1.1.0
 mock==2.0.0
 nose==1.3.7
 rednose==1.3.0
+backoff==1.5.0

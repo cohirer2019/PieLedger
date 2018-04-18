@@ -4,16 +4,18 @@ import grpc
 from api.grpc import ledger_pb2
 from api.grpc.mappers import account_mapper
 from .base import PieLedgerGrpcTest
+from ...core.base import book_context
 
 
 class GrpcAccountTest(PieLedgerGrpcTest):
 
-    def test_query_with_balance(self):
+    @book_context
+    def test_query_with_balance(self, book):
         """Account balance is fetched per request properly"""
 
-        acc = self.make_account('balance', 'ASSET')
-        acc_1 = self.make_account('cash', 'CASH')
-        self.book.save()
+        acc = self.make_account(book, 'balance', 'ASSET')
+        acc_1 = self.make_account(book, 'cash', 'CASH')
+        book.save()
 
         # No balance update by default
         response, result = self.unary_unary(
@@ -28,7 +30,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
             ])
         self.assertIs(result.code, grpc.StatusCode.OK)
         self.assertEqual(response.balance.value, '0.00')
-        self.book.session.refresh(acc)
+        book.session.refresh(acc)
         self.assertEqual(acc._cached_balance, 0)
 
         # Change the balance
@@ -48,9 +50,9 @@ class GrpcAccountTest(PieLedgerGrpcTest):
         self.assertIs(result.code, grpc.StatusCode.OK)
         self.assertEqual(response.balance.value, '-10.00')
 
-    def test_find_or_create_account(self):
+    @book_context
+    def test_find_or_create_account(self, book):
 
-        book = self.book
         root_account_guid = book.root_account.guid
 
         # guid找到account，返回account的信息
