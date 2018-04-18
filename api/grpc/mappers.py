@@ -29,21 +29,6 @@ class OneWayMapper(_OneWayMapper):
         super(OneWayMapper, self).__init__(
             attributes_cache_provider=AttributesCache, *args, **kw)
 
-    def __apply_mapping(self, source_obj, attr_name_mapping):
-
-        mapped_params_dict = {}
-
-        for attr_name_from, attr_name_to in attr_name_mapping.items():
-            # skip since mapping is suppressed by user (attribute_name = None)
-            if not (attr_name_from and attr_name_to):
-                continue
-
-            source_attr_value = self.__get_attribute_value(source_obj, attr_name_from)
-            if self.__do_apply_mapping(attr_name_from, attr_name_to, source_attr_value):
-                mapped_params_dict[attr_name_to] = self.__do_apply_mapping(attr_name_from, attr_name_to, source_attr_value)
-
-        return mapped_params_dict
-
 
 account_mapper = OneWayMapper(ledger_pb2.Account)
 account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
@@ -51,41 +36,54 @@ account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
 
 # 把protocol buffer的Account model转换成可以直接被piecash的Account使用的dict
 account_model_mapper = OneWayMapper(
-    dict, {k: None for k in core.Account.__table__.columns.keys()})
-account_model_mapper = account_model_mapper.target_initializers({
+    dict, {k: None for k in core.Account.__table__.columns.keys()}
+).target_initializers({
     'type': lambda obj: ledger_pb2.AccountType.Name(obj.type),
     'parent_guid': lambda obj: obj.parent.guid
+}).custom_mappings({
+    'guid': None
 })
 
 
-transaction_mapper = OneWayMapper(ledger_pb2.Transaction)
-split_mapper = OneWayMapper(ledger_pb2.Split)
-split_mapper = split_mapper.nested_mapper(account_mapper, core.Account)
-split_mapper = split_mapper.target_initializers({
+split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
+    account_mapper, core.Account
+).target_initializers({
     'amount': lambda obj: ledger_pb2.MonetaryAmount(
-        value=str(obj.value), num=obj._value_num, denom=obj._value_denom)
+        value=str(obj.value), num=obj._value_num, denom=obj._value_denom),
+    'action': lambda obj: obj.action or 'UNKNOWN'
+}).custom_mappings({
+    'transaction': None
 })
+
 
 split_model_mapper = OneWayMapper(
-    dict, {k: None for k in core.Split.__table__.columns.keys()})
-split_model_mapper = split_model_mapper.target_initializers({
+    dict, {k: None for k in core.Split.__table__.columns.keys()}
+).target_initializers({
     'value': lambda obj: int(obj.amount.value),
-    'account': lambda obj: obj.account.guid
+    'account': lambda obj: obj.account.guid,
+    'action': lambda obj: ledger_pb2.SplitAction.Name(obj.action)
+}).custom_mappings({
+    'guid': None
 })
 
-transaction_mapper = transaction_mapper.target_initializers({
-    'splits': lambda obj: [split_mapper.map(split) for split in obj.splits]})
+transaction_mapper = OneWayMapper(
+    ledger_pb2.Transaction
+).target_initializers({
+    'splits': lambda o: [split_mapper.map(s) for s in o.splits]
+})
 
 transaction_model_mapper = OneWayMapper(
-    dict, {k: None for k in core.Transaction.__table__.columns.keys()})
-transaction_model_mapper = transaction_model_mapper.target_initializers({
-    'num': lambda obj: obj.reference,
-    'splits': lambda obj: [split_model_mapper.map(split) for split in obj.splits]
+    dict, {k: None for k in core.Transaction.__table__.columns.keys()}
+).custom_mappings({
+    'guid': None,
+    'reference': 'num'
+}).target_initializers({
+    'splits': lambda o: [split_model_mapper.map(s) for s in o.splits]
 })
 
 transquery_model_mapper = OneWayMapper(
-    dict, {k: None for k in core.Transaction.__table__.columns.keys()})
-transquery_model_mapper = transquery_model_mapper.target_initializers({
+    dict, {k: None for k in core.Transaction.__table__.columns.keys()}
+).target_initializers({
     'guids': lambda obj: obj.guids,
     'account': lambda obj: obj.account,
     'page_number': lambda obj: obj.page_number,

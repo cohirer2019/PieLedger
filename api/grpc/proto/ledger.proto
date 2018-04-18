@@ -34,11 +34,24 @@ message Account {
   MonetaryAmount balance = 6;
 }
 
+enum SplitAction {
+  UNKNOWN = 0;
+  BUY = 1;
+  SELL = 2;
+  TOPPING = 3;
+  CASHIN = 4;
+  WITHDRAW = 5;
+  CASHOUT = 6; 
+  REFUND = 7;
+}
+
 message Split {
   string guid = 1;
   Account account = 2;
-  MonetaryAmount amount = 3;
-  string memo = 4;
+  SplitAction action = 3;
+  MonetaryAmount amount = 4;
+  string memo = 5;
+  Transaction transaction = 6;
 }
 
 message Transaction {

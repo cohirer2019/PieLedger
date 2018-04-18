@@ -5,10 +5,17 @@ import "ledger.proto";
 package pieledger;
 
 message TransactionQueryRequest {
-  repeated string guids = 1;
-  Account account = 2;
-  int32 page_number = 3;
-  int32 result_per_page = 4;
+  int32 page_number = 1;
+  int32 result_per_page = 2;
+  repeated string guids = 3;
+  Account account = 4;
+}
+
+message SplitQueryRequest {
+  int32 page_number = 1;
+  int32 result_per_page = 2;
+  Account account = 3;
+  SplitAction action = 4;
 }
 
 service PieLedger {

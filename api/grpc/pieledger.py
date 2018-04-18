@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-from piecash.core import Account
 import grpc
 
 from core.book import open_book
@@ -44,16 +43,6 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
 
             book.save()
             return ret
-
-    def UpdateBalance(self, request, context):
-        with open_book() as book:
-            account = book.session.query(Account).filter(
-                Account.guid == request.guid
-            ).first()
-            if account:
-                ret = account_mapper.map(account)
-                ret.balance = 100
-                return ret
 
     def FindTransactions(self, request, context):
         with open_book() as book:

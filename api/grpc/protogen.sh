@@ -1,5 +1,7 @@
 #!/bin/bash    
 
+set -e
+
 # the directory of the script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -21,9 +23,10 @@ function cleanup {
 # register the cleanup function to be called on the EXIT signal
 trap cleanup EXIT
 
-python -m grpc_tools.protoc -I proto --python_out=$WORK_DIR --grpc_python_out=$WORK_DIR `ls $DIR/proto`
+python -m grpc_tools.protoc -I $DIR/proto --python_out=$WORK_DIR --grpc_python_out=$WORK_DIR `ls $DIR/proto`
 GENERATED_FILES=`ls -C $WORK_DIR`
 mv $WORK_DIR/* $DIR/
+cd $DIR
 2to3 -n -w --no-diffs $GENERATED_FILES 2>/dev/null
 
 echo "Generated python files successfully"

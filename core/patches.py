@@ -99,7 +99,9 @@ def _patch_split():
     from piecash.core import Split
 
     Split.running_total = Column(Float(as_decimal=True))
-    Split.enter_date = Column(_DateTime, index=True, default=datetime.now)
+    Split.enter_date = Column(
+        _DateTime, index=True,
+        default=lambda: datetime.now().replace(microsecond=0))
 
 
 def _patch_get_engine():
