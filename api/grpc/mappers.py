@@ -49,6 +49,7 @@ account_mapper = OneWayMapper(ledger_pb2.Account)
 account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
 
 
+# 把protocol buffer的Account model转换成可以直接被piecash的Account使用的dict
 account_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Account.__table__.columns.keys()})
 account_model_mapper = account_model_mapper.target_initializers({
@@ -65,6 +66,12 @@ split_mapper = split_mapper.target_initializers({
         value=str(obj.value), num=obj._value_num, denom=obj._value_denom)
 })
 
+split_model_mapper = OneWayMapper(
+    dict, {k: None for k in core.Split.__table__.columns.keys()})
+split_model_mapper = split_model_mapper.target_initializers({
+    'value': lambda obj: int(obj.amount.value),
+    'account': lambda obj: obj.account.guid
+})
 
 transaction_mapper = transaction_mapper.target_initializers({
     'splits': lambda obj: [split_mapper.map(split) for split in obj.splits]})
@@ -72,6 +79,13 @@ transaction_mapper = transaction_mapper.target_initializers({
 transaction_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Transaction.__table__.columns.keys()})
 transaction_model_mapper = transaction_model_mapper.target_initializers({
+    'num': lambda obj: obj.reference,
+    'splits': lambda obj: [split_model_mapper.map(split) for split in obj.splits]
+})
+
+transquery_model_mapper = OneWayMapper(
+    dict, {k: None for k in core.Transaction.__table__.columns.keys()})
+transquery_model_mapper = transquery_model_mapper.target_initializers({
     'guids': lambda obj: obj.guids,
     'account': lambda obj: obj.account,
     'page_number': lambda obj: obj.page_number,
