@@ -93,4 +93,142 @@ class TransactionTest(PieLedgerGrpcTest):
                 ],
                 description='CV_paid'
             ))
+        self.assertIsNotNone(response.guid)
+        self.assertIs(result.code, grpc.StatusCode.OK)
+
+        response, result = self.unary_unary(
+            'CreateTransaction', ledger_pb2.Transaction(
+                reference='10',
+                splits=[
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='10',
+                            num=500,
+                            denom=100),
+                        memo='use CNY paid'
+                    ),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5',
+                            num=-500,
+                            denom=100),
+                        memo='use CNY paid')
+                ],
+                description='CV_paid'
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertIn('not balanced on its value', result.detail)
+        self.assertIsNone(response)
+
+        response, result = self.unary_unary(
+            'CreateTransaction', ledger_pb2.Transaction(
+                reference='10',
+                splits=[
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='10',
+                            num=500,
+                            denom=100),
+                        memo='use CNY paid'
+                    ),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5',
+                            num=-500,
+                            denom=100),
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5',
+                            num=-500,
+                            denom=100),
+                        memo='use CNY paid')
+                ],
+                description='CV_paid'
+            ))
+        self.assertIsNotNone(response.guid)
+        self.assertIs(result.code, grpc.StatusCode.OK)
+
+        response, result = self.unary_unary(
+            'CreateTransaction', ledger_pb2.Transaction(
+                reference='10',
+                splits=[
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid='1qaz2wsx'),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='10',
+                            num=500,
+                            denom=100),
+                        memo='use CNY paid'
+                    ),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5',
+                            num=-500,
+                            denom=100),
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5',
+                            num=-500,
+                            denom=100),
+                        memo='use CNY paid')
+                ],
+                description='CV_paid'
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertEqual('account not exist', result.detail)
+
+    @book_context
+    def test_alter_transaction(self, book):
+        acc1 = self.make_account(book, 'Acc 1', 'ASSET')
+        acc2 = self.make_account(book, 'Acc 2', 'ASSET')
+        book.save()
+        transaction = self.transfer(acc1, acc2, 12)
+        book.save()
+        transactionid = transaction.guid
+        splitid1 = transaction.splits[0].guid
+        splitid2 = transaction.splits[1].guid
+
+        response, result = self.unary_unary(
+            'AlterTransaction', ledger_pb2.Transaction(
+                guid=transactionid,
+                reference='10',
+                splits=[
+                    ledger_pb2.Split(
+                        guid=splitid1,
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='50'),
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        guid=splitid2,
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-50'),
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='5'),
+                        memo='use CNY paid'
+                    ),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(
+                            value='-5'),
+                        memo='use CNY paid')
+                ],
+                description='CV_paid'
+            ))
+        self.assertEqual(response.guid, transactionid)
+        self.assertEqual('use CNY paid', response.splits[0].memo)
+        self.assertEqual(4, len(response.splits))
         self.assertIs(result.code, grpc.StatusCode.OK)

@@ -35,13 +35,22 @@ message Account {
 }
 
 enum SplitAction {
+  option allow_alias = true;
+  _ = 0;
   UNKNOWN = 0;
+  B = 1;
   BUY = 1;
+  S = 2;
   SELL = 2;
-  TOPPING = 3;
+  D = 3;
+  DEPOSIT = 3;
+  I = 4;
   CASHIN = 4;
+  W = 5;
   WITHDRAW = 5;
+  O = 6;
   CASHOUT = 6; 
+  R = 7;
   REFUND = 7;
 }
 

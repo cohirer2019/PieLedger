@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='ledger.proto',
   package='pieledger',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cledger.proto\x12\tpieledger\";\n\x0eMonetaryAmount\x12\r\n\x05value\x18\x01 \x01(\t\x12\x0b\n\x03num\x18\x02 \x01(\x12\x12\r\n\x05\x64\x65nom\x18\x03 \x01(\x05\"\xb0\x01\n\x07\x41\x63\x63ount\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12$\n\x04type\x18\x03 \x01(\x0e\x32\x16.pieledger.AccountType\x12\"\n\x06parent\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bplaceholder\x18\x05 \x01(\x08\x12*\n\x07\x62\x61lance\x18\x06 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\"\xc8\x01\n\x05Split\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12&\n\x06\x61\x63tion\x18\x03 \x01(\x0e\x32\x16.pieledger.SplitAction\x12)\n\x06\x61mount\x18\x04 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x0c\n\x04memo\x18\x05 \x01(\t\x12+\n\x0btransaction\x18\x06 \x01(\x0b\x32\x16.pieledger.Transaction\"e\n\x0bTransaction\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x11\n\treference\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12 \n\x06splits\x18\x04 \x03(\x0b\x32\x10.pieledger.Split*\xb7\x01\n\x0b\x41\x63\x63ountType\x12\x08\n\x04ROOT\x10\x00\x12\x0e\n\nRECEIVABLE\x10\x01\x12\n\n\x06MUTUAL\x10\x02\x12\x08\n\x04\x43\x41SH\x10\x03\x12\t\n\x05\x41SSET\x10\x04\x12\x08\n\x04\x42\x41NK\x10\x05\x12\t\n\x05STOCK\x10\x06\x12\n\n\x06\x43REDIT\x10\x07\x12\r\n\tLIABILITY\x10\x08\x12\x0b\n\x07PAYABLE\x10\t\x12\n\n\x06INCOME\x10\n\x12\x0b\n\x07\x45XPENSE\x10\x0b\x12\x0b\n\x07TRADING\x10\x0c\x12\n\n\x06\x45QUITY\x10\r*m\n\x0bSplitAction\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03\x42UY\x10\x01\x12\x08\n\x04SELL\x10\x02\x12\x0b\n\x07TOPPING\x10\x03\x12\n\n\x06\x43\x41SHIN\x10\x04\x12\x0c\n\x08WITHDRAW\x10\x05\x12\x0b\n\x07\x43\x41SHOUT\x10\x06\x12\n\n\x06REFUND\x10\x07\x62\x06proto3')
+  serialized_pb=_b('\n\x0cledger.proto\x12\tpieledger\";\n\x0eMonetaryAmount\x12\r\n\x05value\x18\x01 \x01(\t\x12\x0b\n\x03num\x18\x02 \x01(\x12\x12\r\n\x05\x64\x65nom\x18\x03 \x01(\x05\"\xb0\x01\n\x07\x41\x63\x63ount\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12$\n\x04type\x18\x03 \x01(\x0e\x32\x16.pieledger.AccountType\x12\"\n\x06parent\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bplaceholder\x18\x05 \x01(\x08\x12*\n\x07\x62\x61lance\x18\x06 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\"\xc8\x01\n\x05Split\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12&\n\x06\x61\x63tion\x18\x03 \x01(\x0e\x32\x16.pieledger.SplitAction\x12)\n\x06\x61mount\x18\x04 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x0c\n\x04memo\x18\x05 \x01(\t\x12+\n\x0btransaction\x18\x06 \x01(\x0b\x32\x16.pieledger.Transaction\"e\n\x0bTransaction\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x11\n\treference\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12 \n\x06splits\x18\x04 \x03(\x0b\x32\x10.pieledger.Split*\xb7\x01\n\x0b\x41\x63\x63ountType\x12\x08\n\x04ROOT\x10\x00\x12\x0e\n\nRECEIVABLE\x10\x01\x12\n\n\x06MUTUAL\x10\x02\x12\x08\n\x04\x43\x41SH\x10\x03\x12\t\n\x05\x41SSET\x10\x04\x12\x08\n\x04\x42\x41NK\x10\x05\x12\t\n\x05STOCK\x10\x06\x12\n\n\x06\x43REDIT\x10\x07\x12\r\n\tLIABILITY\x10\x08\x12\x0b\n\x07PAYABLE\x10\t\x12\n\n\x06INCOME\x10\n\x12\x0b\n\x07\x45XPENSE\x10\x0b\x12\x0b\n\x07TRADING\x10\x0c\x12\n\n\x06\x45QUITY\x10\r*\xa9\x01\n\x0bSplitAction\x12\x05\n\x01_\x10\x00\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x05\n\x01\x42\x10\x01\x12\x07\n\x03\x42UY\x10\x01\x12\x05\n\x01S\x10\x02\x12\x08\n\x04SELL\x10\x02\x12\x05\n\x01\x44\x10\x03\x12\x0b\n\x07\x44\x45POSIT\x10\x03\x12\x05\n\x01I\x10\x04\x12\n\n\x06\x43\x41SHIN\x10\x04\x12\x05\n\x01W\x10\x05\x12\x0c\n\x08WITHDRAW\x10\x05\x12\x05\n\x01O\x10\x06\x12\x0b\n\x07\x43\x41SHOUT\x10\x06\x12\x05\n\x01R\x10\x07\x12\n\n\x06REFUND\x10\x07\x1a\x02\x10\x01\x62\x06proto3')
 )
 
 _ACCOUNTTYPE = _descriptor.EnumDescriptor(
@@ -101,42 +101,74 @@ _SPLITACTION = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='UNKNOWN', index=0, number=0,
+      name='_', index=0, number=0,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BUY', index=1, number=1,
+      name='UNKNOWN', index=1, number=0,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SELL', index=2, number=2,
+      name='B', index=2, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TOPPING', index=3, number=3,
+      name='BUY', index=3, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CASHIN', index=4, number=4,
+      name='S', index=4, number=2,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WITHDRAW', index=5, number=5,
+      name='SELL', index=5, number=2,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CASHOUT', index=6, number=6,
+      name='D', index=6, number=3,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='REFUND', index=7, number=7,
+      name='DEPOSIT', index=7, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='I', index=8, number=4,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CASHIN', index=9, number=4,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='W', index=10, number=5,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='WITHDRAW', index=11, number=5,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='O', index=12, number=6,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CASHOUT', index=13, number=6,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='R', index=14, number=7,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='REFUND', index=15, number=7,
       options=None,
       type=None),
   ],
   containing_type=None,
-  options=None,
-  serialized_start=759,
-  serialized_end=868,
+  options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\020\001')),
+  serialized_start=760,
+  serialized_end=929,
 )
 _sym_db.RegisterEnumDescriptor(_SPLITACTION)
 
@@ -155,13 +187,21 @@ INCOME = 10
 EXPENSE = 11
 TRADING = 12
 EQUITY = 13
+_ = 0
 UNKNOWN = 0
+B = 1
 BUY = 1
+S = 2
 SELL = 2
-TOPPING = 3
+D = 3
+DEPOSIT = 3
+I = 4
 CASHIN = 4
+W = 5
 WITHDRAW = 5
+O = 6
 CASHOUT = 6
+R = 7
 REFUND = 7
 
 
@@ -439,4 +479,6 @@ Transaction = _reflection.GeneratedProtocolMessageType('Transaction', (_message.
 _sym_db.RegisterMessage(Transaction)
 
 
+_SPLITACTION.has_options = True
+_SPLITACTION._options = _descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\020\001'))
 # @@protoc_insertion_point(module_scope)

@@ -59,7 +59,7 @@ split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
 split_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Split.__table__.columns.keys()}
 ).target_initializers({
-    'value': lambda obj: int(obj.amount.value),
+    'value': lambda obj: obj.amount.value and int(obj.amount.value),
     'account': lambda obj: obj.account.guid,
     'action': lambda obj: ledger_pb2.SplitAction.Name(obj.action)
 }).custom_mappings({

@@ -61,6 +61,33 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     def CreateTransaction(self, request, context):
         with open_book() as book:
             trans_mgr = TransactionManager(book)
-            transaction = trans_mgr.create_transaction(
-                **transaction_model_mapper.map(request))
+            try:
+                transaction = trans_mgr.create_transaction(
+                    **transaction_model_mapper.map(request))
+            except ValueError as e:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details(e.args[0])
+                return
+            try:
+                book.save()
+            except Exception as e:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details(e.args[0])
+                return
+            return transaction_mapper.map(transaction)
+
+    def AlterTransaction(self, request, context):
+        with open_book() as book:
+            trans_mgr = TransactionManager(book)
+            transaction = trans_mgr.find_by_guid(guid=request.guid)
+            if not transaction:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+            trans_mgr.alter_transaction(
+                transaction, **transaction_model_mapper.map(request))
+            try:
+                book.save()
+            except Exception as e:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details(e.args[0])
+                return
             return transaction_mapper.map(transaction)

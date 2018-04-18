@@ -28,8 +28,10 @@ def adapt_session(session, book, readonly):
 @contextmanager
 def _test_context(conn):
     trans = conn.begin()
-    yield
-    trans.rollback()
+    try:
+        yield
+    finally:
+        trans.rollback()
 
 
 @contextmanager
@@ -38,9 +40,11 @@ def _real_context():
     _tmp_piecash_engine = piecash_session.create_piecash_engine
     piecash_session.adapt_session = _adapt_session
     piecash_session.create_piecash_engine = _create_engine
-    yield
-    piecash_session.adapt_session = _tmp_adapt_session
-    piecash_session.create_piecash_engine = _tmp_piecash_engine
+    try:
+        yield
+    finally:
+        piecash_session.adapt_session = _tmp_adapt_session
+        piecash_session.create_piecash_engine = _tmp_piecash_engine
 
 
 def book_context(*args, **kw):
