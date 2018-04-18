@@ -186,10 +186,10 @@ class TransactionTest(PieLedgerGrpcTest):
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertEqual('account not exist', result.detail)
 
-    def test_alter_transaction(self):
-        book = self.book
-        acc1 = self.make_account('Acc 1', 'ASSET')
-        acc2 = self.make_account('Acc 2', 'ASSET')
+    @book_context
+    def test_alter_transaction(self, book):
+        acc1 = self.make_account(book, 'Acc 1', 'ASSET')
+        acc2 = self.make_account(book, 'Acc 2', 'ASSET')
         book.save()
         transaction = self.transfer(acc1, acc2, 12)
         book.save()
