@@ -6,8 +6,7 @@ from .base import BaseManager
 
 class AccountManager(BaseManager):
 
-    def find_by_guid(self, guid):
-        return self.book.query(Account).get(guid)
+    model = Account
 
     def find_by_parent(self, parent_guid, name, _type):
         return self.book.query(Account).filter(
@@ -15,7 +14,7 @@ class AccountManager(BaseManager):
             Account.name == name,
             Account.type == _type).first()
 
-    def create_account(self, currency=None, **kw):
+    def create(self, currency=None, **kw):
         kw['commodity'] = self.book.currencies.get(mnemonic=currency) \
             if currency else self.book.default_currency
         parent_guid = kw.pop('parent_guid', None)

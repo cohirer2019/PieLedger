@@ -4,8 +4,9 @@ import grpc
 from core.book import open_book
 from core.account import AccountManager
 from core.transaction import TransactionManager
+from core.split import SplitManager
 from .mappers import account_mapper, account_model_mapper, \
-    transaction_mapper, transaction_model_mapper
+    transaction_mapper, transaction_model_mapper, split_model_mapper
 from . import ledger_pb2
 from . import services_pb2_grpc
 
@@ -30,7 +31,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                         # Start nested session as a commit will be emited,
                         # which validates the account against the book
                         with book.session.begin_nested():
-                            account = acc_mgr.create_account(
+                            account = acc_mgr.create(
                                 currency=request.currency,
                                 **account_model_mapper.map(request))
                 except ValueError as e:
@@ -62,9 +63,13 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     def CreateTransaction(self, request, context):
         with open_book() as book:
             trans_mgr = TransactionManager(book)
+            split_mgr = SplitManager(book)
             try:
-                transaction = trans_mgr.create_transaction(
+                transaction = trans_mgr.create(
                     **transaction_model_mapper.map(request))
+                for split in request.splits:
+                    split_mgr.create(
+                        transaction, **split_model_mapper.map(split))
             except ValueError as e:
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                 context.set_details(e.args[0])
@@ -80,11 +85,20 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     def AlterTransaction(self, request, context):
         with open_book() as book:
             trans_mgr = TransactionManager(book)
-            transaction = trans_mgr.find_by_guid(guid=request.guid)
+            split_mgr = SplitManager(book)
+            transaction = trans_mgr.find_by_guid(guid=request.transaction.guid)
             if not transaction:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
-            trans_mgr.alter_transaction(
-                transaction, **transaction_model_mapper.map(request))
+            try:
+                for split in request.append_splits:
+                    split_mgr.create(
+                        transaction, **split_model_mapper.map(split))
+                trans_mgr.alter(
+                    transaction,
+                    **transaction_model_mapper.map(request.transaction))
+            except ValueError as e:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details(e.args[0])
             try:
                 book.save()
             except Exception as e:

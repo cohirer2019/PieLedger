@@ -18,11 +18,16 @@ message SplitQueryRequest {
   SplitAction action = 4;
 }
 
+message TransactionAlterRequest {
+  Transaction transaction = 1;
+  repeated Split append_splits = 2;
+}
+
 service PieLedger {
   rpc FindOrCreateAccount(Account) returns (Account);
   rpc AlterAccount(Account) returns (Account);
 
   rpc CreateTransaction(Transaction) returns (Transaction);
   rpc FindTransactions(TransactionQueryRequest) returns (stream Transaction);
-  rpc AlterTransaction(Transaction) returns (Transaction);
+  rpc AlterTransaction(TransactionAlterRequest) returns (Transaction);
 }
