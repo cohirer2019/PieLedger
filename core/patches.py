@@ -3,13 +3,13 @@
 def _patch_account():  #noqa
 
     import warnings
-    from decimal import Decimal
 
     from sqlalchemy import Column, Float, inspect, exc as sa_exc
     from sqlalchemy.sql import func
     from piecash.core import Account, Split
     from piecash.core.account import ACCOUNT_TYPES, \
         _is_parent_child_types_consistent, root_types, GncConversionError
+    from core.utils import currency_decimal
 
     def _sa_validate(self):
         if self.type not in ACCOUNT_TYPES:
@@ -80,8 +80,7 @@ def _patch_account():  #noqa
                 recurse=recurse, commodity=commodity) for acc in self.children)
 
         if as_decimal:
-            q = Decimal(1) / commodity.fraction
-            balance = Decimal(balance).quantize(q)
+            balance = currency_decimal(balance, commodity)
 
         return balance
 

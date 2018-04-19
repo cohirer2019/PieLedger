@@ -106,8 +106,9 @@ class BaseTestCase(unittest.TestCase):
         currency = from_acc.commodity
         assert currency == to_acc.commodity, \
             'Commodities of accounts should be the same'
+        nvalue = '-%s' % value if isinstance(value, str) else -value
         return Transaction(enter_date=enter_date, currency=currency, splits=[
-            Split(account=from_acc, value=-value),
+            Split(account=from_acc, value=nvalue),
             Split(account=to_acc, value=value),
         ])
 

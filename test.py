@@ -14,7 +14,7 @@ def _load_test_config():
         with open('config_test.yml', 'r+') as ymlfile:
             test_config = yaml.load(ymlfile)
             if test_config:
-                ledger_config.update()
+                ledger_config.update(test_config)
     except IOError:
         warnings.warn('Failed to locate config_test.yml')
 

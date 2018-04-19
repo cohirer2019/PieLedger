@@ -29,7 +29,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
                 ('with_balance', True)
             ])
         self.assertIs(result.code, grpc.StatusCode.OK)
-        self.assertEqual(response.balance.value, '0.00')
+        self.assertEqual(response.balance.as_string, '0.00')
         book.session.refresh(acc)
         self.assertEqual(acc._cached_balance, 0)
 
@@ -40,7 +40,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
         response, result = self.unary_unary(
             'FindOrCreateAccount', account_mapper.map(acc))
         self.assertIs(result.code, grpc.StatusCode.OK)
-        self.assertEqual(response.balance.value, '')
+        self.assertEqual(response.balance.as_string, '')
 
         # Balance updated if required
         response, result = self.unary_unary(
@@ -48,7 +48,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
                 ('with_balance', True)
             ])
         self.assertIs(result.code, grpc.StatusCode.OK)
-        self.assertEqual(response.balance.value, '-10.00')
+        self.assertEqual(response.balance.as_string, '-10.00')
 
     @book_context
     def test_find_or_create_account(self, book):

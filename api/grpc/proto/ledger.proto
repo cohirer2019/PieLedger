@@ -20,9 +20,10 @@ enum AccountType {
 }
 
 message MonetaryAmount {
-  string value = 1;
-  sint64 num = 2;
-  int32 denom = 3;
+  oneof value {
+    string as_string = 1;
+    sint64 as_int = 2;
+  }
 }
 
 message Account {
@@ -32,6 +33,7 @@ message Account {
   Account parent = 4;
   bool placeholder = 5;
   MonetaryAmount balance = 6;
+  string currency = 7;
 }
 
 enum SplitAction {
@@ -57,7 +59,10 @@ enum SplitAction {
 message Split {
   string guid = 1;
   Account account = 2;
-  SplitAction action = 3;
+  oneof action {
+    SplitAction standard_action = 10;
+    string custom_action = 11;
+  }
   MonetaryAmount amount = 4;
   string memo = 5;
   Transaction transaction = 6;
@@ -67,6 +72,7 @@ message Transaction {
   string guid = 1;
   string reference = 2;
   string description = 3;
+  string currency = 4;
   
-  repeated Split splits = 4;
+  repeated Split splits = 5;
 }

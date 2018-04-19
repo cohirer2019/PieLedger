@@ -77,24 +77,18 @@ class TransactionTest(PieLedgerGrpcTest):
                 splits=[
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='5',
-                            num=500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=5),
                         memo='use CNY paid'
                     ),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5',
-                            num=-500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
                         memo='use CNY paid')
                 ],
                 description='CV_paid'
             ))
-        self.assertIsNotNone(response.guid)
         self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertIsNotNone(response.guid)
 
         response, result = self.unary_unary(
             'CreateTransaction', ledger_pb2.Transaction(
@@ -102,18 +96,12 @@ class TransactionTest(PieLedgerGrpcTest):
                 splits=[
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='10',
-                            num=500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=10),
                         memo='use CNY paid'
                     ),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5',
-                            num=-500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=10),
                         memo='use CNY paid')
                 ],
                 description='CV_paid'
@@ -128,31 +116,22 @@ class TransactionTest(PieLedgerGrpcTest):
                 splits=[
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='10',
-                            num=500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=10),
                         memo='use CNY paid'
                     ),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5',
-                            num=-500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
                         memo='use CNY paid'),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5',
-                            num=-500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
                         memo='use CNY paid')
                 ],
                 description='CV_paid'
             ))
-        self.assertIsNotNone(response.guid)
         self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertIsNotNone(response.guid)
 
         response, result = self.unary_unary(
             'CreateTransaction', ledger_pb2.Transaction(
@@ -160,25 +139,16 @@ class TransactionTest(PieLedgerGrpcTest):
                 splits=[
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid='1qaz2wsx'),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='10',
-                            num=500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=10),
                         memo='use CNY paid'
                     ),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5',
-                            num=-500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
                         memo='use CNY paid'),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5',
-                            num=-500,
-                            denom=100),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
                         memo='use CNY paid')
                 ],
                 description='CV_paid'
@@ -205,30 +175,26 @@ class TransactionTest(PieLedgerGrpcTest):
                     ledger_pb2.Split(
                         guid=splitid1,
                         account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='50'),
+                        amount=ledger_pb2.MonetaryAmount(as_int=50),
                         memo='use CNY paid'),
                     ledger_pb2.Split(
                         guid=splitid2,
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-50'),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-50),
                         memo='use CNY paid'),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='5'),
+                        amount=ledger_pb2.MonetaryAmount(as_int=5),
                         memo='use CNY paid'
                     ),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(
-                            value='-5'),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
                         memo='use CNY paid')
                 ],
                 description='CV_paid'
             ))
+        self.assertIs(result.code, grpc.StatusCode.OK)
         self.assertEqual(response.guid, transactionid)
         self.assertEqual('use CNY paid', response.splits[0].memo)
         self.assertEqual(4, len(response.splits))
-        self.assertIs(result.code, grpc.StatusCode.OK)

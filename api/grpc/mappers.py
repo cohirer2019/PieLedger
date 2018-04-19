@@ -5,6 +5,7 @@ from mapperpy.attributes_util import get_attributes as _get_attributes, \
     AttributesCache as _AttributesCache
 from piecash import core
 
+from core.utils import currency_decimal
 from . import ledger_pb2
 
 
@@ -30,7 +31,9 @@ class OneWayMapper(_OneWayMapper):
             attributes_cache_provider=AttributesCache, *args, **kw)
 
 
-account_mapper = OneWayMapper(ledger_pb2.Account)
+account_mapper = OneWayMapper(ledger_pb2.Account).target_initializers({
+    'currency': lambda obj: obj and obj.commodity and obj.commodity.mnemonic
+})
 account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
 
 
@@ -49,19 +52,24 @@ split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
     account_mapper, core.Account
 ).target_initializers({
     'amount': lambda obj: ledger_pb2.MonetaryAmount(
-        value=str(obj.value), num=obj._value_num, denom=obj._value_denom),
-    'action': lambda obj: obj.action or 'UNKNOWN'
+        as_string=str(currency_decimal(obj.value, obj.transaction.currency)))
 }).custom_mappings({
     'transaction': None
 })
 
 
+def _map_action_to_model(obj):
+    if obj.HasField('standard_action'):
+        return ledger_pb2.SplitAction.Name(obj.standard_action)
+    return obj.custom_action
+
+
 split_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Split.__table__.columns.keys()}
 ).target_initializers({
-    'value': lambda obj: obj.amount.value and int(obj.amount.value),
+    'value': lambda obj: obj.amount.as_int,
     'account': lambda obj: obj.account.guid,
-    'action': lambda obj: ledger_pb2.SplitAction.Name(obj.action)
+    'action': _map_action_to_model
 }).custom_mappings({
     'guid': None
 })
@@ -69,7 +77,8 @@ split_model_mapper = OneWayMapper(
 transaction_mapper = OneWayMapper(
     ledger_pb2.Transaction
 ).target_initializers({
-    'splits': lambda o: [split_mapper.map(s) for s in o.splits]
+    'splits': lambda o: [split_mapper.map(s) for s in o.splits],
+    'currency': lambda obj: obj.currency.mnemonic
 })
 
 transaction_model_mapper = OneWayMapper(
