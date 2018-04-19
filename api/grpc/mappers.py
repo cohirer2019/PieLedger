@@ -67,7 +67,8 @@ def _map_action_to_model(obj):
 split_model_mapper = OneWayMapper(
     dict, {k: None for k in core.Split.__table__.columns.keys()}
 ).target_initializers({
-    'value': lambda obj: obj.amount.as_int,
+    'value_int': lambda obj: obj.amount.as_int,
+    'value_str': lambda obj: obj.amount.as_string,
     'account': lambda obj: obj.account.guid,
     'action': _map_action_to_model
 }).custom_mappings({

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='services.proto',
   package='pieledger',
   syntax='proto3',
-  serialized_pb=_b('\n\x0eservices.proto\x12\tpieledger\x1a\x0cledger.proto\"{\n\x17TransactionQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12\r\n\x05guids\x18\x03 \x03(\t\x12#\n\x07\x61\x63\x63ount\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\"\x8e\x01\n\x11SplitQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12#\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32\x12.pieledger.Account\x12&\n\x06\x61\x63tion\x18\x04 \x01(\x0e\x32\x16.pieledger.SplitAction2\xdd\x02\n\tPieLedger\x12=\n\x13\x46indOrCreateAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x36\n\x0c\x41lterAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x43\n\x11\x43reateTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transaction\x12P\n\x10\x46indTransactions\x12\".pieledger.TransactionQueryRequest\x1a\x16.pieledger.Transaction0\x01\x12\x42\n\x10\x41lterTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transactionb\x06proto3')
+  serialized_pb=_b('\n\x0eservices.proto\x12\tpieledger\x1a\x0cledger.proto\"{\n\x17TransactionQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12\r\n\x05guids\x18\x03 \x03(\t\x12#\n\x07\x61\x63\x63ount\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\"\x8e\x01\n\x11SplitQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12#\n\x07\x61\x63\x63ount\x18\x03 \x01(\x0b\x32\x12.pieledger.Account\x12&\n\x06\x61\x63tion\x18\x04 \x01(\x0e\x32\x16.pieledger.SplitAction\"o\n\x17TransactionAlterRequest\x12+\n\x0btransaction\x18\x01 \x01(\x0b\x32\x16.pieledger.Transaction\x12\'\n\rappend_splits\x18\x02 \x03(\x0b\x32\x10.pieledger.Split2\xe9\x02\n\tPieLedger\x12=\n\x13\x46indOrCreateAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x36\n\x0c\x41lterAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x43\n\x11\x43reateTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transaction\x12P\n\x10\x46indTransactions\x12\".pieledger.TransactionQueryRequest\x1a\x16.pieledger.Transaction0\x01\x12N\n\x10\x41lterTransaction\x12\".pieledger.TransactionAlterRequest\x1a\x16.pieledger.Transactionb\x06proto3')
   ,
   dependencies=[ledger__pb2.DESCRIPTOR,])
 
@@ -130,11 +130,52 @@ _SPLITQUERYREQUEST = _descriptor.Descriptor(
   serialized_end=311,
 )
 
+
+_TRANSACTIONALTERREQUEST = _descriptor.Descriptor(
+  name='TransactionAlterRequest',
+  full_name='pieledger.TransactionAlterRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='transaction', full_name='pieledger.TransactionAlterRequest.transaction', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='append_splits', full_name='pieledger.TransactionAlterRequest.append_splits', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=313,
+  serialized_end=424,
+)
+
 _TRANSACTIONQUERYREQUEST.fields_by_name['account'].message_type = ledger__pb2._ACCOUNT
 _SPLITQUERYREQUEST.fields_by_name['account'].message_type = ledger__pb2._ACCOUNT
 _SPLITQUERYREQUEST.fields_by_name['action'].enum_type = ledger__pb2._SPLITACTION
+_TRANSACTIONALTERREQUEST.fields_by_name['transaction'].message_type = ledger__pb2._TRANSACTION
+_TRANSACTIONALTERREQUEST.fields_by_name['append_splits'].message_type = ledger__pb2._SPLIT
 DESCRIPTOR.message_types_by_name['TransactionQueryRequest'] = _TRANSACTIONQUERYREQUEST
 DESCRIPTOR.message_types_by_name['SplitQueryRequest'] = _SPLITQUERYREQUEST
+DESCRIPTOR.message_types_by_name['TransactionAlterRequest'] = _TRANSACTIONALTERREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 TransactionQueryRequest = _reflection.GeneratedProtocolMessageType('TransactionQueryRequest', (_message.Message,), dict(
@@ -151,6 +192,13 @@ SplitQueryRequest = _reflection.GeneratedProtocolMessageType('SplitQueryRequest'
   ))
 _sym_db.RegisterMessage(SplitQueryRequest)
 
+TransactionAlterRequest = _reflection.GeneratedProtocolMessageType('TransactionAlterRequest', (_message.Message,), dict(
+  DESCRIPTOR = _TRANSACTIONALTERREQUEST,
+  __module__ = 'services_pb2'
+  # @@protoc_insertion_point(class_scope:pieledger.TransactionAlterRequest)
+  ))
+_sym_db.RegisterMessage(TransactionAlterRequest)
+
 
 
 _PIELEDGER = _descriptor.ServiceDescriptor(
@@ -159,8 +207,8 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=314,
-  serialized_end=663,
+  serialized_start=427,
+  serialized_end=788,
   methods=[
   _descriptor.MethodDescriptor(
     name='FindOrCreateAccount',
@@ -203,7 +251,7 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
     full_name='pieledger.PieLedger.AlterTransaction',
     index=4,
     containing_service=None,
-    input_type=ledger__pb2._TRANSACTION,
+    input_type=_TRANSACTIONALTERREQUEST,
     output_type=ledger__pb2._TRANSACTION,
     options=None,
   ),

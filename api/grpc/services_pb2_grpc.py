@@ -37,7 +37,7 @@ class PieLedgerStub(object):
         )
     self.AlterTransaction = channel.unary_unary(
         '/pieledger.PieLedger/AlterTransaction',
-        request_serializer=ledger__pb2.Transaction.SerializeToString,
+        request_serializer=services__pb2.TransactionAlterRequest.SerializeToString,
         response_deserializer=ledger__pb2.Transaction.FromString,
         )
 
@@ -106,7 +106,7 @@ def add_PieLedgerServicer_to_server(servicer, server):
       ),
       'AlterTransaction': grpc.unary_unary_rpc_method_handler(
           servicer.AlterTransaction,
-          request_deserializer=ledger__pb2.Transaction.FromString,
+          request_deserializer=services__pb2.TransactionAlterRequest.FromString,
           response_serializer=ledger__pb2.Transaction.SerializeToString,
       ),
   }

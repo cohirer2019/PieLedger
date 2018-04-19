@@ -154,7 +154,7 @@ class TransactionTest(PieLedgerGrpcTest):
                 description='CV_paid'
             ))
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
-        self.assertEqual('account not exist', result.detail)
+        self.assertEqual('account<1qaz2wsx> not found', result.detail)
 
     @book_context
     def test_alter_transaction(self, book):
@@ -164,37 +164,58 @@ class TransactionTest(PieLedgerGrpcTest):
         transaction = self.transfer(acc1, acc2, 12)
         book.save()
         transactionid = transaction.guid
-        splitid1 = transaction.splits[0].guid
-        splitid2 = transaction.splits[1].guid
 
         response, result = self.unary_unary(
-            'AlterTransaction', ledger_pb2.Transaction(
-                guid=transactionid,
-                reference='10',
-                splits=[
-                    ledger_pb2.Split(
-                        guid=splitid1,
-                        account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(as_int=50),
-                        memo='use CNY paid'),
-                    ledger_pb2.Split(
-                        guid=splitid2,
-                        account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(as_int=-50),
-                        memo='use CNY paid'),
+            'AlterTransaction', services_pb2.TransactionAlterRequest(
+                transaction=ledger_pb2.Transaction(
+                    guid=transactionid,
+                    reference='10',
+                    description='CV_paid'),
+                append_splits=[
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc1.guid),
-                        amount=ledger_pb2.MonetaryAmount(as_int=5),
-                        memo='use CNY paid'
-                    ),
+                        amount=ledger_pb2.MonetaryAmount(as_int=500),
+                        custom_action='withdraw',
+                        memo='use CNY paid'),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
-                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-500),
+                        custom_action='recharge',
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(as_string='2.00'),
+                        custom_action='withdraw',
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(as_string='-2.00'),
+                        custom_action='recharge',
                         memo='use CNY paid')
-                ],
-                description='CV_paid'
+                ]
             ))
         self.assertIs(result.code, grpc.StatusCode.OK)
         self.assertEqual(response.guid, transactionid)
-        self.assertEqual('use CNY paid', response.splits[0].memo)
-        self.assertEqual(4, len(response.splits))
+        self.assertEqual(6, len(response.splits))
+
+        response, result = self.unary_unary(
+            'AlterTransaction', services_pb2.TransactionAlterRequest(
+                transaction=ledger_pb2.Transaction(
+                    guid=transactionid,
+                    reference='10',
+                    description='CV_paid'),
+                append_splits=[
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(as_string='2.001'),
+                        custom_action='withdraw',
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(as_string='-2.001'),
+                        custom_action='recharge',
+                        memo='use CNY paid')
+                ]
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertEqual(result.detail, 'invalid value range!')
