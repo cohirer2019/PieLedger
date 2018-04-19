@@ -68,6 +68,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
             'FindOrCreateAccount',
             ledger_pb2.Account(
                 name='test_account',
+                currency='CNY',
                 type=ledger_pb2.AccountType.Value('INCOME'),
                 parent=ledger_pb2.Account(guid=root_account_guid)
             ))
@@ -75,6 +76,7 @@ class GrpcAccountTest(PieLedgerGrpcTest):
         self.assertEqual(response.name, 'test_account')
         self.assertIs(result.code, grpc.StatusCode.OK)
         self.assertEqual(len(book.accounts), 1)
+        self.assertEqual(book.accounts[0].commodity.mnemonic, 'CNY')
 
         # 没有guid，如果有account，直接返回account的信息
         response, result = self.unary_unary(
@@ -105,6 +107,17 @@ class GrpcAccountTest(PieLedgerGrpcTest):
             ))
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertIn('has no parent', result.detail)
+
+        # Invalid currency
+        response, result = self.unary_unary(
+            'FindOrCreateAccount',
+            ledger_pb2.Account(
+                name='test_account',
+                currency='dummy',
+                type=ledger_pb2.AccountType.Value('INCOME')
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertIn('Could not find the ISO code', result.detail)
 
         # Non-exist parent
         response, result = self.unary_unary(
