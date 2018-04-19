@@ -40,8 +40,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
 
             # Update balance if required
             if account and meta.get('with_balance', False):
-                balance = account.get_balance(as_decimal=True)
-                ret.balance.as_string = str(balance)
+                ret.balance.as_string = str(account.get_balance())
 
             book.save()
             return ret

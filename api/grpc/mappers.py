@@ -5,7 +5,6 @@ from mapperpy.attributes_util import get_attributes as _get_attributes, \
     AttributesCache as _AttributesCache
 from piecash import core
 
-from core.utils import currency_decimal
 from . import ledger_pb2
 
 
@@ -51,8 +50,7 @@ account_model_mapper = OneWayMapper(
 split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
     account_mapper, core.Account
 ).target_initializers({
-    'amount': lambda obj: ledger_pb2.MonetaryAmount(
-        as_string=str(currency_decimal(obj.value, obj.transaction.currency)))
+    'amount': lambda obj: ledger_pb2.MonetaryAmount(as_string=str(obj.value))
 }).custom_mappings({
     'transaction': None
 })

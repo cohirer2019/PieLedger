@@ -11,7 +11,7 @@ from .base import BaseTestCase, book_context
 class CoreSplitTest(BaseTestCase):
 
     @book_context
-    def test_running_total(self, book):
+    def test_running_balance(self, book):
         """Running total of splits is caculated correctly"""
         acc1 = self.make_account(book, 'from', 'ASSET')
         acc2 = self.make_account(book, 'to_random', 'CASH')
@@ -24,7 +24,7 @@ class CoreSplitTest(BaseTestCase):
         self.assertEqual(acc2.get_balance(), 80)
         # One of the sequence could be the result sequence
         self.assertIn(
-            sorted([s.running_total for s in acc2.splits]),
+            sorted([s.running_balance for s in acc2.splits]),
             ([80, 90, 100], [-10, 80, 90], [-20, -10, 80]))
 
         acc2 = self.make_account(book, 'to_ordered', 'CASH')
@@ -36,10 +36,10 @@ class CoreSplitTest(BaseTestCase):
             book.flush()  # ensure the order
 
         self.assertCountEqual(
-            [s.running_total for s in acc2.splits], (100, 90, 80))
+            [s.running_balance for s in acc2.splits], (100, 90, 80))
 
     @book_context(join_session=False)
-    def test_running_total_concurrent(self, book):
+    def test_running_balance_concurrent(self, book):
         """Concurrent running total calculation is handled properly
 
         Account releated to the calculated split is locked. Error hanlding
@@ -74,4 +74,5 @@ class CoreSplitTest(BaseTestCase):
             t.join()
 
         self.assertCountEqual(
-            range(10, CONCURRENCY+11), [s.running_total for s in acc2.splits])
+            range(10, CONCURRENCY+11),
+            [s.running_balance for s in acc2.splits])

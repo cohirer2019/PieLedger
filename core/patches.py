@@ -1,10 +1,35 @@
 # -*- coding:utf-8 -*-
 
+
+def _patch_hybird_property(hybrid_property, num_col, denom_col):
+    from decimal import Decimal
+
+    num_name, denom_name = \
+        "_{}".format(num_col.name), "_{}".format(denom_col.name)
+    name = num_col.name.split("_")[0]
+
+    def _expr(cls):
+        # No cast required for mysql
+        return (num_col / denom_col).label(name)
+
+    def _fget(self):
+        # The method with piecash lose the info of denom and we return it
+        # with the new method here
+        num, denom = getattr(self, num_name), getattr(self, denom_name)
+        return num and Decimal(1) / denom * num
+
+    return hybrid_property.overrides.expression(_expr).overrides.getter(_fget)
+
+
+def _hybird_property(num_col, denom_col):
+    from piecash._common import hybrid_property_gncnumeric
+    p = hybrid_property_gncnumeric(num_col, denom_col)
+    return _patch_hybird_property(p, num_col, denom_col)
+
+
 def _patch_account():  #noqa
 
-    import warnings
-
-    from sqlalchemy import Column, Float, inspect, exc as sa_exc
+    from sqlalchemy import Column, BIGINT, inspect
     from sqlalchemy.sql import func
     from piecash.core import Account, Split
     from piecash.core.account import ACCOUNT_TYPES, \
@@ -41,7 +66,7 @@ def _patch_account():  #noqa
                 raise ValueError(
                     '{} has no parent but is not a root account'.format(self))
 
-    def _sa_get_balance(self, recurse=True, commodity=None, as_decimal=False):
+    def _sa_get_balance(self, recurse=True, commodity=None):
         """SQLAlchemy for calculating the splits and caching"""
 
         assert self.type != 'ROOT', \
@@ -53,16 +78,16 @@ def _patch_account():  #noqa
         if self._cached_balance is not None:
             balance = self._cached_balance
         elif inspect(self).persistent:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-                balance = (self.commodity.book.query(
-                    func.sum(Split.quantity)
-                ).filter(
-                    Split.account_guid == self.guid
-                ).scalar() or 0) * self.sign
+            balance = (self.commodity.book.query(
+                func.sum(Split.quantity)
+            ).filter(
+                Split.account_guid == self.guid
+            ).scalar() or 0) * self.sign
+            # Cast to decimal with commodity fraction
+            balance = currency_decimal(balance, self.commodity)
             self._cached_balance = balance
         else:
-            balance = 0
+            balance = currency_decimal(0, self.commodity)
 
         if commodity != self.commodity:
             try:
@@ -78,26 +103,36 @@ def _patch_account():  #noqa
         if recurse and self.children:
             balance += sum(acc.get_balance(
                 recurse=recurse, commodity=commodity) for acc in self.children)
-
-        if as_decimal:
-            balance = currency_decimal(balance, commodity)
-
         return balance
 
     Account.validate = _sa_validate
     Account.get_balance = _sa_get_balance
-    Account._cached_balance = Column(
-        'cached_balance', Float(as_decimal=True))
+
+    Account._cached_balance_num = balance_num = Column(
+        'cached_balance_num', BIGINT())
+    Account._cached_balance_denom = balance_denom = Column(
+        'cached_balance_denom', BIGINT())
+    Account._cached_balance = _hybird_property(balance_num, balance_denom)
 
 
 def _patch_split():
 
     from datetime import datetime
-    from sqlalchemy import Column, Float
+    from sqlalchemy import Column, BIGINT
     from piecash.sa_extra import _DateTime
     from piecash.core import Split
 
-    Split.running_total = Column(Float(as_decimal=True))
+    Split._running_balance_num = balance_num = Column(
+        'running_balance_num', BIGINT(), nullable=False)
+    Split._running_balance_denom = balance_denom = Column(
+        'running_balance_denom', BIGINT(), nullable=False)
+    Split.running_balance = _hybird_property(balance_num, balance_denom)
+
+    Split.quantity = _patch_hybird_property(
+        Split.quantity, Split._quantity_num, Split._quantity_denom)
+    Split.value = _patch_hybird_property(
+        Split.value, Split._value_num, Split._value_denom)
+
     Split.enter_date = Column(
         _DateTime, index=True,
         default=lambda: datetime.now().replace(microsecond=0))
@@ -149,11 +184,13 @@ def _reg_invalidate_balance():
             if acc not in accounts:
                 accounts.add(acc)
                 acc._cached_balance = None
-                # Lock the account for running total calculation
+                # Lock the account for balance calculation
                 session.query(Account._cached_balance).filter(
-                    Account.guid == acc.guid).with_for_update().scalar()
-            acc._cached_balance = obj.running_total = \
-                acc.get_balance(as_decimal=True, recurse=False) + obj.quantity
+                    Account.guid == acc.guid
+                ).with_for_update().scalar()
+            # Add up the balance with splits in the sessio
+            acc._cached_balance = obj.running_balance = \
+                acc.get_balance(recurse=False) + obj.quantity
 
     event.listen(Session, 'before_flush', _invalidate_balance)
 
