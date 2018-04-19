@@ -14,8 +14,9 @@ class AccountManager(BaseManager):
             Account.name == name,
             Account.type == _type).first()
 
-    def create(self, **kw):
-        kw['commodity'] = self.book.commodities.get(mnemonic="EUR")
+    def create(self, currency=None, **kw):
+        kw['commodity'] = self.book.currencies.get(mnemonic=currency) \
+            if currency else self.book.default_currency
         parent_guid = kw.pop('parent_guid', None)
         if parent_guid:
             kw['parent'] = self.find_by_guid(parent_guid)

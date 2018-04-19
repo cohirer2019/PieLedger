@@ -32,6 +32,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                         # which validates the account against the book
                         with book.session.begin_nested():
                             account = acc_mgr.create(
+                                currency=request.currency,
                                 **account_model_mapper.map(request))
                 except ValueError as e:
                     context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
