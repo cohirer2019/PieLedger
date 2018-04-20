@@ -1,1 +1,3 @@
 db_uri: "mysql+pymysql://[username]:[password]@localhost/pieledger"
+grpc:
+    bind_addr:
