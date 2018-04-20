@@ -18,7 +18,7 @@ import ledger_pb2
 #                 result_per_page=20)
 #         )
 def run():
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel('[::]:50052')
     stub = services_pb2_grpc.PieLedgerStub(channel)
     try:
         response = stub.FindOrCreateAccount(ledger_pb2.Account(
