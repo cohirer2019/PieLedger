@@ -61,7 +61,7 @@ class TransactionTest(PieLedgerGrpcTest):
 
         intinal_metadata = result.intinal_metadata
         metadata = dict((x, y) for x, y in intinal_metadata)
-        self.assertEqual(metadata.get('num'), 3)
+        self.assertEqual(metadata.get('num'), '3')
         self.assertEqual(next(response).guid, transactionid2)
         self.assertIs(result.code, grpc.StatusCode.OK)
 
@@ -78,12 +78,12 @@ class TransactionTest(PieLedgerGrpcTest):
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc1.guid),
                         amount=ledger_pb2.MonetaryAmount(as_int=5),
-                        memo='use CNY paid'
+                        memo='购买简历'
                     ),
                     ledger_pb2.Split(
                         account=ledger_pb2.Account(guid=acc2.guid),
                         amount=ledger_pb2.MonetaryAmount(as_int=-5),
-                        memo='use CNY paid')
+                        memo='购买简历')
                 ],
                 description='CV_paid'
             ))
@@ -108,7 +108,6 @@ class TransactionTest(PieLedgerGrpcTest):
             ))
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertIn('not balanced on its value', result.detail)
-        self.assertIsNone(response)
 
         response, result = self.unary_unary(
             'CreateTransaction', ledger_pb2.Transaction(
@@ -155,6 +154,26 @@ class TransactionTest(PieLedgerGrpcTest):
             ))
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertEqual('account<1qaz2wsx> not found', result.detail)
+
+        # split的transaction currency与account currency不同
+        response, result = self.unary_unary(
+            'CreateTransaction', ledger_pb2.Transaction(
+                reference='10',
+                currency='JPY',
+                splits=[
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc1.guid),
+                        amount=ledger_pb2.MonetaryAmount(as_int=5),
+                        memo='use CNY paid'),
+                    ledger_pb2.Split(
+                        account=ledger_pb2.Account(guid=acc2.guid),
+                        amount=ledger_pb2.MonetaryAmount(as_int=-5),
+                        memo='use CNY paid')
+                ],
+                description='CV_paid'
+            ))
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertEqual('currency must identical', result.detail)
 
     @book_context
     def test_alter_transaction(self, book):

@@ -26,7 +26,8 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                 try:
                     account = acc_mgr.find_by_parent(
                         request.parent.guid, request.name,
-                        ledger_pb2.AccountType.Name(request.type))
+                        ledger_pb2.AccountType.Name(request.type),
+                        request.placeholder)
                     if not account:
                         # Start nested session as a commit will be emited,
                         # which validates the account against the book
@@ -56,7 +57,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details("transaction %s not found")
                 return
-            context.send_initial_metadata((('num', num),))
+            context.send_initial_metadata((('num', str(num)),))
             for transaction in transactions:
                 yield transaction_mapper.map(transaction)
 
@@ -73,13 +74,12 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             except ValueError as e:
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                 context.set_details(e.args[0])
-                return
+                return ledger_pb2.Transaction()
             try:
                 book.save()
             except Exception as e:
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                 context.set_details(e.args[0])
-                return
             return transaction_mapper.map(transaction)
 
     def AlterTransaction(self, request, context):
@@ -104,5 +104,4 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             except Exception as e:
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                 context.set_details(e.args[0])
-                return
             return transaction_mapper.map(transaction)

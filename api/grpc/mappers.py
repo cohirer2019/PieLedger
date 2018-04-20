@@ -86,7 +86,8 @@ transaction_model_mapper = OneWayMapper(
     'guid': None,
     'reference': 'num'
 }).target_initializers({
-    'splits': lambda o: [split_model_mapper.map(s) for s in o.splits]
+    'splits': lambda o: [split_model_mapper.map(s) for s in o.splits],
+    'currency': lambda obj: obj.currency
 })
 
 transquery_model_mapper = OneWayMapper(

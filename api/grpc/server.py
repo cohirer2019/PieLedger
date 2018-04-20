@@ -11,7 +11,7 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=0))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     services_pb2_grpc.add_PieLedgerServicer_to_server(
         pieledger.PieLedger(), server)
     server.add_insecure_port('[::]:50051')

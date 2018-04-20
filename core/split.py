@@ -16,6 +16,8 @@ class SplitManager(BaseManager):
         kwargs['account'] = self.book.query(Account).get(account_guid)
         if not kwargs['account']:
             raise ValueError('account<%s> not found' % account_guid)
+        if transaction.currency != kwargs['account'].commodity:
+            raise ValueError('currency must identical')
         if value_str:
             kwargs['value'] = Decimal(value_str)
         elif value_int:

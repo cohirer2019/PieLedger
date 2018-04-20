@@ -8,7 +8,9 @@ class AccountManager(BaseManager):
 
     model = Account
 
-    def find_by_parent(self, parent_guid, name, _type):
+    def find_by_parent(self, parent_guid, name, _type, placeholder):
+        if placeholder:
+            parent_guid = self.book.root_account_guid
         return self.book.query(Account).filter(
             Account.parent_guid == parent_guid,
             Account.name == name,
@@ -22,5 +24,7 @@ class AccountManager(BaseManager):
             kw['parent'] = self.find_by_guid(parent_guid)
             if not kw['parent']:
                 raise ValueError('Parent account<%s> not found' % parent_guid)
+        elif kw.get('placeholder'):
+            kw['parent'] = self.book.root_account
         account = Account(**kw)
         return account
