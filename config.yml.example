@@ -1,3 +1,3 @@
-db_uri: "mysql+pymysql://[username]:[password]@localhost/pieledger"
+db_uri: "mysql+pymysql://[username]:[password]@localhost/pieledger?charset=utf8"
 grpc:
     bind_addr:

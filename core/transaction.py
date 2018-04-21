@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from sqlalchemy import func, distinct
-from piecash.core import Transaction, Split
+from piecash.core import Transaction, Split, Account
 
 from .base import BaseManager
 
@@ -35,7 +35,16 @@ class TransactionManager(BaseManager):
         return transactions_page, count_query.scalar()
 
     def create(self, **kwargs):
-        kwargs['currency'] = self.book.default_currency
+        mnemonic = kwargs.pop('currency', None)
+        if not mnemonic:
+            account_guid = kwargs.get('splits')[0].get('account')
+            account = self.book.query(Account).get(account_guid)
+            if not account:
+                raise ValueError('account<%s> not found' % account_guid)
+            kwargs['currency'] = account.commodity
+        else:
+            kwargs['currency'] = self.book.currencies.get(
+                mnemonic=mnemonic)
         kwargs.pop('splits', [])
         transaction = Transaction(**kwargs)
         return transaction

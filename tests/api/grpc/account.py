@@ -59,8 +59,8 @@ class GrpcAccountTest(PieLedgerGrpcTest):
         response, result = self.unary_unary(
             'FindOrCreateAccount', ledger_pb2.Account(guid=root_account_guid))
 
-        self.assertEqual(response.guid, root_account_guid)
         self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.guid, root_account_guid)
         self.assertEqual(len(book.accounts), 0)
 
         # 没有guid，如果没有account，创建一个并返回创建后的信息
@@ -73,8 +73,8 @@ class GrpcAccountTest(PieLedgerGrpcTest):
                 parent=ledger_pb2.Account(guid=root_account_guid)
             ))
 
-        self.assertEqual(response.name, 'test_account')
         self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.name, 'test_account')
         self.assertEqual(len(book.accounts), 1)
         self.assertEqual(book.accounts[0].commodity.mnemonic, 'CNY')
 
@@ -87,8 +87,32 @@ class GrpcAccountTest(PieLedgerGrpcTest):
                 parent=ledger_pb2.Account(guid=root_account_guid)
             ))
 
-        self.assertEqual(response.name, 'test_account')
         self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.name, 'test_account')
+        self.assertEqual(len(book.accounts), 1)
+
+        # 如果是placeholder不为True且没有parent account，报错
+        response, result = self.unary_unary(
+            'FindOrCreateAccount',
+            ledger_pb2.Account(
+                name='test_account',
+                type=ledger_pb2.AccountType.Value('INCOME'),
+            ))
+
+        self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
+        self.assertIn('has no parent', result.detail)
+
+        # 没有guid，如果有account，直接返回account的信息
+        response, result = self.unary_unary(
+            'FindOrCreateAccount',
+            ledger_pb2.Account(
+                name='test_account',
+                type=ledger_pb2.AccountType.Value('INCOME'),
+                placeholder=True
+            ))
+
+        self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertEqual(response.name, 'test_account')
         self.assertEqual(len(book.accounts), 1)
 
     def test_find_or_create_account_failed(self):
@@ -107,6 +131,17 @@ class GrpcAccountTest(PieLedgerGrpcTest):
             ))
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertIn('has no parent', result.detail)
+
+        # No parent defined but is placeholder
+        response, result = self.unary_unary(
+            'FindOrCreateAccount',
+            ledger_pb2.Account(
+                placeholder=True,
+                name='test_account',
+                type=ledger_pb2.AccountType.Value('INCOME')
+            ))
+        self.assertIs(result.code, grpc.StatusCode.OK)
+        self.assertIn('Root Account', response.parent.name)
 
         # Invalid currency
         response, result = self.unary_unary(

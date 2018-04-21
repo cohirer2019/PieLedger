@@ -7,7 +7,7 @@ from core.transaction import TransactionManager
 from core.split import SplitManager
 from .mappers import account_mapper, account_model_mapper, \
     transaction_mapper, transaction_model_mapper, split_model_mapper, \
-    split_mapper, split_query_mapper, map_action_to_pb
+    split_query_mapper, split_mapper, map_action_to_pb
 from . import ledger_pb2
 from . import services_pb2_grpc
 
@@ -27,7 +27,8 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             try:
                 account = acc_mgr.find_by_parent(
                     request.parent.guid, request.name,
-                    ledger_pb2.AccountType.Name(request.type))
+                    ledger_pb2.AccountType.Name(request.type),
+                    request.placeholder)
                 if not account:
                     # Start nested session as a commit will be emited,
                     # which validates the account against the book
@@ -41,7 +42,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
         ret = account_mapper.map(account)
 
         # Update balance if required
-        if account and meta.get('with_balance'):
+        if account and meta.get('with_balance', False):
             ret.balance.as_string = str(account.get_balance())
 
         book.save()
@@ -57,23 +58,9 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("transaction %s not found")
             return
-        context.send_initial_metadata((('num', num),))
+        context.send_initial_metadata((('num', str(num)),))
         for transaction in transactions:
             yield transaction_mapper.map(transaction)
-
-    @book_context
-    def FindSplits(self, book, request, context):
-        split_mgr = SplitManager(book)
-        try:
-            splits, num = split_mgr.find_splits(
-                **split_query_mapper.map(request))
-            context.send_initial_metadata((('total', str(num)),))
-            for s in splits:
-                pbs = split_mapper.map(s)
-                yield map_action_to_pb(s, pbs)
-        except ValueError as e:
-            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details(e.args[0])
 
     @book_context
     def CreateTransaction(self, book, request, context):
@@ -88,13 +75,12 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
         except ValueError as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(e.args[0])
-            return
+            return ledger_pb2.Transaction()
         try:
             book.save()
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(e.args[0])
-            return
         return transaction_mapper.map(transaction)
 
     @book_context
@@ -119,5 +105,18 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(e.args[0])
-            return
         return transaction_mapper.map(transaction)
+
+    @book_context
+    def FindSplits(self, book, request, context):
+        split_mgr = SplitManager(book)
+        try:
+            splits, num = split_mgr.find_splits(
+                **split_query_mapper.map(request))
+            context.send_initial_metadata((('total', str(num)),))
+            for s in splits:
+                pbs = split_mapper.map(s)
+                yield map_action_to_pb(s, pbs)
+        except ValueError as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(e.args[0])
