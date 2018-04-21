@@ -40,6 +40,11 @@ class PieLedgerStub(object):
         request_serializer=services__pb2.TransactionAlterRequest.SerializeToString,
         response_deserializer=ledger__pb2.Transaction.FromString,
         )
+    self.FindSplits = channel.unary_stream(
+        '/pieledger.PieLedger/FindSplits',
+        request_serializer=services__pb2.SplitQueryRequest.SerializeToString,
+        response_deserializer=ledger__pb2.Split.FromString,
+        )
 
 
 class PieLedgerServicer(object):
@@ -81,6 +86,13 @@ class PieLedgerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def FindSplits(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_PieLedgerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -108,6 +120,11 @@ def add_PieLedgerServicer_to_server(servicer, server):
           servicer.AlterTransaction,
           request_deserializer=services__pb2.TransactionAlterRequest.FromString,
           response_serializer=ledger__pb2.Transaction.SerializeToString,
+      ),
+      'FindSplits': grpc.unary_stream_rpc_method_handler(
+          servicer.FindSplits,
+          request_deserializer=services__pb2.SplitQueryRequest.FromString,
+          response_serializer=ledger__pb2.Split.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

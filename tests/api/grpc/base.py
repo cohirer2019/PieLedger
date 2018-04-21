@@ -10,7 +10,7 @@ from ...core.base import BaseTestCase
 RPCResult = namedtuple('RPCResult', ['metadata', 'code', 'detail'])
 RPCStreamResult = namedtuple(
     'RPCStreamResult',
-    ['intinal_metadata', 'trailing_metadata', 'code', 'detail'])
+    ['initial_metadata', 'trailing_metadata', 'code', 'detail'])
 
 
 class GrpcTestCase(BaseTestCase):

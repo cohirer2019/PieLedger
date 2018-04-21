@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package pieledger;
 
 enum AccountType {
@@ -64,8 +66,10 @@ message Split {
     string custom_action = 11;
   }
   MonetaryAmount amount = 4;
-  string memo = 5;
-  Transaction transaction = 6;
+  MonetaryAmount running_balance = 5;
+  string memo = 6;
+  Transaction transaction = 7;
+  google.protobuf.Timestamp enter_date = 8;
 }
 
 message Transaction {

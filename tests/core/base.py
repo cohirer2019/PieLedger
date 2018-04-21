@@ -107,10 +107,15 @@ class BaseTestCase(unittest.TestCase):
         assert currency == to_acc.commodity, \
             'Commodities of accounts should be the same'
         nvalue = '-%s' % value if isinstance(value, str) else -value
-        return Transaction(enter_date=enter_date, currency=currency, splits=[
+        trans = Transaction(currency=currency, splits=[
             Split(account=from_acc, value=nvalue),
             Split(account=to_acc, value=value),
         ])
+        if enter_date:
+            enter_date = enter_date.replace(microsecond=0)
+            for e in (trans, trans.splits[0], trans.splits[1]):
+                e.enter_date = enter_date
+        return trans
 
     @book_context(join_session=False)
     def _delete(self, book, *args):

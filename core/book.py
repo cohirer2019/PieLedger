@@ -1,8 +1,9 @@
 # -*- coding:utf-8 -*-
 import warnings
+from functools import wraps
 
 import piecash
-from piecash.core import Account, Transaction
+from piecash.core import Account, Transaction, Split
 from sqlalchemy import schema
 
 from .config import ledger_config
@@ -28,7 +29,8 @@ def create_book(**kw):
         engine = book.session.get_bind()
         for key, column in (
                 ('ix_account_name', Account.name),
-                ('ix_transactions_enter_date', Transaction.enter_date)):
+                ('ix_transactions_enter_date', Transaction.enter_date),
+                ('ix_split_action', Split.action)):
             schema.Index(key, column).create(bind=engine)
 
 
@@ -36,3 +38,16 @@ def open_book(readonly=False):
     return piecash.open_book(
         uri_conn=_db_uri(), open_if_lock=True, do_backup=False,
         readonly=readonly)
+
+
+def book_context(*args, **kw):
+    def decorator(func):
+        @wraps(func)
+        def func_wraper(self, *a, **ka):
+            with open_book() as book:
+                return func(self, book, *a, **ka)
+        return func_wraper
+
+    if args and callable(args[0]):
+        return decorator(args[0])
+    return decorator

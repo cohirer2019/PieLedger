@@ -14,14 +14,16 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='ledger.proto',
   package='pieledger',
   syntax='proto3',
-  serialized_pb=_b('\n\x0cledger.proto\x12\tpieledger\"@\n\x0eMonetaryAmount\x12\x13\n\tas_string\x18\x01 \x01(\tH\x00\x12\x10\n\x06\x61s_int\x18\x02 \x01(\x12H\x00\x42\x07\n\x05value\"\xc2\x01\n\x07\x41\x63\x63ount\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12$\n\x04type\x18\x03 \x01(\x0e\x32\x16.pieledger.AccountType\x12\"\n\x06parent\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bplaceholder\x18\x05 \x01(\x08\x12*\n\x07\x62\x61lance\x18\x06 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x10\n\x08\x63urrency\x18\x07 \x01(\t\"\xf6\x01\n\x05Split\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12\x31\n\x0fstandard_action\x18\n \x01(\x0e\x32\x16.pieledger.SplitActionH\x00\x12\x17\n\rcustom_action\x18\x0b \x01(\tH\x00\x12)\n\x06\x61mount\x18\x04 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x0c\n\x04memo\x18\x05 \x01(\t\x12+\n\x0btransaction\x18\x06 \x01(\x0b\x32\x16.pieledger.TransactionB\x08\n\x06\x61\x63tion\"w\n\x0bTransaction\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x11\n\treference\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x10\n\x08\x63urrency\x18\x04 \x01(\t\x12 \n\x06splits\x18\x05 \x03(\x0b\x32\x10.pieledger.Split*\xb7\x01\n\x0b\x41\x63\x63ountType\x12\x08\n\x04ROOT\x10\x00\x12\x0e\n\nRECEIVABLE\x10\x01\x12\n\n\x06MUTUAL\x10\x02\x12\x08\n\x04\x43\x41SH\x10\x03\x12\t\n\x05\x41SSET\x10\x04\x12\x08\n\x04\x42\x41NK\x10\x05\x12\t\n\x05STOCK\x10\x06\x12\n\n\x06\x43REDIT\x10\x07\x12\r\n\tLIABILITY\x10\x08\x12\x0b\n\x07PAYABLE\x10\t\x12\n\n\x06INCOME\x10\n\x12\x0b\n\x07\x45XPENSE\x10\x0b\x12\x0b\n\x07TRADING\x10\x0c\x12\n\n\x06\x45QUITY\x10\r*\xa9\x01\n\x0bSplitAction\x12\x05\n\x01_\x10\x00\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x05\n\x01\x42\x10\x01\x12\x07\n\x03\x42UY\x10\x01\x12\x05\n\x01S\x10\x02\x12\x08\n\x04SELL\x10\x02\x12\x05\n\x01\x44\x10\x03\x12\x0b\n\x07\x44\x45POSIT\x10\x03\x12\x05\n\x01I\x10\x04\x12\n\n\x06\x43\x41SHIN\x10\x04\x12\x05\n\x01W\x10\x05\x12\x0c\n\x08WITHDRAW\x10\x05\x12\x05\n\x01O\x10\x06\x12\x0b\n\x07\x43\x41SHOUT\x10\x06\x12\x05\n\x01R\x10\x07\x12\n\n\x06REFUND\x10\x07\x1a\x02\x10\x01\x62\x06proto3')
-)
+  serialized_pb=_b('\n\x0cledger.proto\x12\tpieledger\x1a\x1fgoogle/protobuf/timestamp.proto\"@\n\x0eMonetaryAmount\x12\x13\n\tas_string\x18\x01 \x01(\tH\x00\x12\x10\n\x06\x61s_int\x18\x02 \x01(\x12H\x00\x42\x07\n\x05value\"\xc2\x01\n\x07\x41\x63\x63ount\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12$\n\x04type\x18\x03 \x01(\x0e\x32\x16.pieledger.AccountType\x12\"\n\x06parent\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\x12\x13\n\x0bplaceholder\x18\x05 \x01(\x08\x12*\n\x07\x62\x61lance\x18\x06 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x10\n\x08\x63urrency\x18\x07 \x01(\t\"\xda\x02\n\x05Split\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12#\n\x07\x61\x63\x63ount\x18\x02 \x01(\x0b\x32\x12.pieledger.Account\x12\x31\n\x0fstandard_action\x18\n \x01(\x0e\x32\x16.pieledger.SplitActionH\x00\x12\x17\n\rcustom_action\x18\x0b \x01(\tH\x00\x12)\n\x06\x61mount\x18\x04 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x32\n\x0frunning_balance\x18\x05 \x01(\x0b\x32\x19.pieledger.MonetaryAmount\x12\x0c\n\x04memo\x18\x06 \x01(\t\x12+\n\x0btransaction\x18\x07 \x01(\x0b\x32\x16.pieledger.Transaction\x12.\n\nenter_date\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\n\x06\x61\x63tion\"w\n\x0bTransaction\x12\x0c\n\x04guid\x18\x01 \x01(\t\x12\x11\n\treference\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x10\n\x08\x63urrency\x18\x04 \x01(\t\x12 \n\x06splits\x18\x05 \x03(\x0b\x32\x10.pieledger.Split*\xb7\x01\n\x0b\x41\x63\x63ountType\x12\x08\n\x04ROOT\x10\x00\x12\x0e\n\nRECEIVABLE\x10\x01\x12\n\n\x06MUTUAL\x10\x02\x12\x08\n\x04\x43\x41SH\x10\x03\x12\t\n\x05\x41SSET\x10\x04\x12\x08\n\x04\x42\x41NK\x10\x05\x12\t\n\x05STOCK\x10\x06\x12\n\n\x06\x43REDIT\x10\x07\x12\r\n\tLIABILITY\x10\x08\x12\x0b\n\x07PAYABLE\x10\t\x12\n\n\x06INCOME\x10\n\x12\x0b\n\x07\x45XPENSE\x10\x0b\x12\x0b\n\x07TRADING\x10\x0c\x12\n\n\x06\x45QUITY\x10\r*\xa9\x01\n\x0bSplitAction\x12\x05\n\x01_\x10\x00\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x05\n\x01\x42\x10\x01\x12\x07\n\x03\x42UY\x10\x01\x12\x05\n\x01S\x10\x02\x12\x08\n\x04SELL\x10\x02\x12\x05\n\x01\x44\x10\x03\x12\x0b\n\x07\x44\x45POSIT\x10\x03\x12\x05\n\x01I\x10\x04\x12\n\n\x06\x43\x41SHIN\x10\x04\x12\x05\n\x01W\x10\x05\x12\x0c\n\x08WITHDRAW\x10\x05\x12\x05\n\x01O\x10\x06\x12\x0b\n\x07\x43\x41SHOUT\x10\x06\x12\x05\n\x01R\x10\x07\x12\n\n\x06REFUND\x10\x07\x1a\x02\x10\x01\x62\x06proto3')
+  ,
+  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
 _ACCOUNTTYPE = _descriptor.EnumDescriptor(
   name='AccountType',
@@ -88,8 +90,8 @@ _ACCOUNTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=661,
-  serialized_end=844,
+  serialized_start=794,
+  serialized_end=977,
 )
 _sym_db.RegisterEnumDescriptor(_ACCOUNTTYPE)
 
@@ -167,8 +169,8 @@ _SPLITACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\020\001')),
-  serialized_start=847,
-  serialized_end=1016,
+  serialized_start=980,
+  serialized_end=1149,
 )
 _sym_db.RegisterEnumDescriptor(_SPLITACTION)
 
@@ -242,8 +244,8 @@ _MONETARYAMOUNT = _descriptor.Descriptor(
       name='value', full_name='pieledger.MonetaryAmount.value',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=27,
-  serialized_end=91,
+  serialized_start=60,
+  serialized_end=124,
 )
 
 
@@ -315,8 +317,8 @@ _ACCOUNT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=94,
-  serialized_end=288,
+  serialized_start=127,
+  serialized_end=321,
 )
 
 
@@ -363,15 +365,29 @@ _SPLIT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='memo', full_name='pieledger.Split.memo', index=5,
-      number=5, type=9, cpp_type=9, label=1,
+      name='running_balance', full_name='pieledger.Split.running_balance', index=5,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='memo', full_name='pieledger.Split.memo', index=6,
+      number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='transaction', full_name='pieledger.Split.transaction', index=6,
-      number=6, type=11, cpp_type=10, label=1,
+      name='transaction', full_name='pieledger.Split.transaction', index=7,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='enter_date', full_name='pieledger.Split.enter_date', index=8,
+      number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -391,8 +407,8 @@ _SPLIT = _descriptor.Descriptor(
       name='action', full_name='pieledger.Split.action',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=291,
-  serialized_end=537,
+  serialized_start=324,
+  serialized_end=670,
 )
 
 
@@ -450,8 +466,8 @@ _TRANSACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=539,
-  serialized_end=658,
+  serialized_start=672,
+  serialized_end=791,
 )
 
 _MONETARYAMOUNT.oneofs_by_name['value'].fields.append(
@@ -466,7 +482,9 @@ _ACCOUNT.fields_by_name['balance'].message_type = _MONETARYAMOUNT
 _SPLIT.fields_by_name['account'].message_type = _ACCOUNT
 _SPLIT.fields_by_name['standard_action'].enum_type = _SPLITACTION
 _SPLIT.fields_by_name['amount'].message_type = _MONETARYAMOUNT
+_SPLIT.fields_by_name['running_balance'].message_type = _MONETARYAMOUNT
 _SPLIT.fields_by_name['transaction'].message_type = _TRANSACTION
+_SPLIT.fields_by_name['enter_date'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _SPLIT.oneofs_by_name['action'].fields.append(
   _SPLIT.fields_by_name['standard_action'])
 _SPLIT.fields_by_name['standard_action'].containing_oneof = _SPLIT.oneofs_by_name['action']

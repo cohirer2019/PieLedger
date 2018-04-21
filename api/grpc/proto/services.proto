@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
 import "ledger.proto";
 
 package pieledger;
@@ -14,8 +15,13 @@ message TransactionQueryRequest {
 message SplitQueryRequest {
   int32 page_number = 1;
   int32 result_per_page = 2;
-  Account account = 3;
-  SplitAction action = 4;
+  Account account = 5;
+  google.protobuf.Timestamp from_datetime = 3;
+  google.protobuf.Timestamp to_datetime = 4;
+  oneof by_action {
+    SplitAction standard_action = 6;
+    string custom_action = 7;
+  }
 }
 
 message TransactionAlterRequest {
@@ -30,4 +36,6 @@ service PieLedger {
   rpc CreateTransaction(Transaction) returns (Transaction);
   rpc FindTransactions(TransactionQueryRequest) returns (stream Transaction);
   rpc AlterTransaction(TransactionAlterRequest) returns (Transaction);
+
+  rpc FindSplits(SplitQueryRequest) returns (stream Split);
 }

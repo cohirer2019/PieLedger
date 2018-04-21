@@ -1,10 +1,14 @@
 # -*- coding:utf-8 -*-
+import inspect
+
 from google.protobuf.message import Message as PBMessage
+from google.protobuf.timestamp_pb2 import Timestamp
 from mapperpy import OneWayMapper as _OneWayMapper, one_way_mapper
 from mapperpy.attributes_util import get_attributes as _get_attributes, \
     AttributesCache as _AttributesCache
 from piecash import core
 
+from core.split import SplitManager
 from . import ledger_pb2
 
 
@@ -33,7 +37,13 @@ class OneWayMapper(_OneWayMapper):
 account_mapper = OneWayMapper(ledger_pb2.Account).target_initializers({
     'currency': lambda obj: obj and obj.commodity and obj.commodity.mnemonic
 })
-account_mapper = account_mapper.nested_mapper(account_mapper, core.Account)
+_parent_account_mapper = OneWayMapper(
+    ledger_pb2.Account
+).custom_mappings({
+    'parent': None
+})
+account_mapper = account_mapper.nested_mapper(
+    _parent_account_mapper, core.Account)
 
 
 # 把protocol buffer的Account model转换成可以直接被piecash的Account使用的dict
@@ -47,12 +57,34 @@ account_model_mapper = OneWayMapper(
 })
 
 
-split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
-    account_mapper, core.Account
+transaction_with_split_mapper = OneWayMapper(
+    ledger_pb2.Transaction
 ).target_initializers({
-    'amount': lambda obj: ledger_pb2.MonetaryAmount(as_string=str(obj.value))
+    'currency': lambda obj: obj.currency.mnemonic
 }).custom_mappings({
-    'transaction': None
+    'splits': None,
+    'num': 'reference'
+})
+
+
+def _convert_datetime(datetime):
+    ts = Timestamp()
+    ts.FromSeconds(int(datetime.strftime('%s')))
+    return ts
+
+
+def _convert_monetary_str(value):
+    return ledger_pb2.MonetaryAmount(as_string=str(value))
+
+
+split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
+    transaction_with_split_mapper, core.Transaction
+).target_initializers({
+    'amount': lambda o: _convert_monetary_str(o.value),
+    'running_balance': lambda o: _convert_monetary_str(o.running_balance),
+    'enter_date': lambda o: _convert_datetime(o.enter_date)
+}).custom_mappings({
+    'account': None
 })
 
 
@@ -60,6 +92,31 @@ def _map_action_to_model(obj):
     if obj.HasField('standard_action'):
         return ledger_pb2.SplitAction.Name(obj.standard_action)
     return obj.custom_action
+
+
+def map_action_to_pb(model, split):
+    try:
+        split.standard_action = \
+            ledger_pb2.SplitAction.Value(model.action)
+    except ValueError:
+        split.custom_action = model.action
+    return split
+
+
+def _map_timestamp(timestamp):
+    if timestamp.seconds:
+        return timestamp.ToDatetime()
+
+
+spec = inspect.getargspec(SplitManager.find_splits)
+split_query_mapper = OneWayMapper(
+    dict, {l: None for l in spec.args}
+).target_initializers({
+    'account_guid': lambda o: o.account.guid,
+    'from_dt': lambda o: _map_timestamp(o.from_datetime),
+    'to_dt': lambda o: _map_timestamp(o.to_datetime),
+    'by_action': _map_action_to_model
+})
 
 
 split_model_mapper = OneWayMapper(
@@ -70,13 +127,26 @@ split_model_mapper = OneWayMapper(
     'account': lambda obj: obj.account.guid,
     'action': _map_action_to_model
 }).custom_mappings({
-    'guid': None
+    'guid': None,
+    'enter_date': None,
+    'running_balance': None
+})
+
+split_with_trans_mapper = OneWayMapper(
+    ledger_pb2.Split
+).target_initializers({
+    'amount': lambda o: _convert_monetary_str(o.value),
+    'running_balance': lambda o: _convert_monetary_str(o.running_balance),
+    'enter_date': lambda o: _convert_datetime(o.enter_date)
+}).custom_mappings({
+    'transaction': None,
+    'account': None
 })
 
 transaction_mapper = OneWayMapper(
     ledger_pb2.Transaction
 ).target_initializers({
-    'splits': lambda o: [split_mapper.map(s) for s in o.splits],
+    'splits': lambda o: [split_with_trans_mapper.map(s) for s in o.splits],
     'currency': lambda obj: obj.currency.mnemonic
 })
 

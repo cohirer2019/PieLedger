@@ -5,8 +5,8 @@ import grpc
 from piecash.core import Split
 
 from api.grpc import ledger_pb2, services_pb2
+from tests.core.base import book_context
 from .base import PieLedgerGrpcTest
-from ...core.base import book_context
 
 
 class TransactionTest(PieLedgerGrpcTest):
@@ -59,8 +59,8 @@ class TransactionTest(PieLedgerGrpcTest):
                 page_number=1,
                 result_per_page=1))
 
-        intinal_metadata = result.intinal_metadata
-        metadata = dict((x, y) for x, y in intinal_metadata)
+        initial_metadata = result.initial_metadata
+        metadata = dict((x, y) for x, y in initial_metadata)
         self.assertEqual(metadata.get('num'), 3)
         self.assertEqual(next(response).guid, transactionid2)
         self.assertIs(result.code, grpc.StatusCode.OK)
