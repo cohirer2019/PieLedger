@@ -9,7 +9,7 @@ class AccountManager(BaseManager):
     model = Account
 
     def find_by_parent(self, parent_guid, name, _type, placeholder):
-        if placeholder:
+        if not parent_guid and placeholder:
             parent_guid = self.book.root_account_guid
         return self.book.query(Account).filter(
             Account.parent_guid == parent_guid,

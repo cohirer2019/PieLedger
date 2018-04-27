@@ -190,7 +190,7 @@ def _reg_invalidate_balance():
                 ).with_for_update().scalar()
             # Add up the balance with splits in the sessio
             acc._cached_balance = obj.running_balance = \
-                acc.get_balance(recurse=False) + obj.quantity
+                acc.get_balance(recurse=False) + obj.quantity * acc.sign
 
     event.listen(Session, 'before_flush', _invalidate_balance)
 
