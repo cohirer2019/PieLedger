@@ -110,13 +110,16 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
     @book_context
     def FindSplits(self, book, request, context):
         split_mgr = SplitManager(book)
+        meta = dict(context.invocation_metadata())
         try:
             splits, num = split_mgr.find_splits(
                 **split_query_mapper.map(request))
             context.send_initial_metadata((('total', str(num)),))
+            find_inverse = meta.get('inverse')
             for s in splits:
-                pbs = split_mapper.map(s)
-                yield map_action_to_pb(s, pbs)
+                if not find_inverse:
+                    s.inverse = split_mgr.find_inverse(s)
+                yield map_action_to_pb(s, split_mapper.map(s))
         except ValueError as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(e.args[0])

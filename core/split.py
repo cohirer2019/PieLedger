@@ -65,3 +65,14 @@ class SplitManager(BaseManager):
             func.count(Split.guid)).filter(*filters)
 
         return query.all(), count_query.scalar()
+
+    @staticmethod
+    def find_inverse(split):
+        """Find the most posible split with was tranfering at the inverse
+           direction
+        """
+        for s in split.transaction.splits:
+            if s == split:
+                continue
+            if s.value == -split.value and s.account != split.account:
+                return s

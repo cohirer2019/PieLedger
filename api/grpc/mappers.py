@@ -77,13 +77,26 @@ def _convert_monetary_str(value):
     return ledger_pb2.MonetaryAmount(as_string=str(value))
 
 
-split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
-    transaction_with_split_mapper, core.Transaction
-).target_initializers({
+_split_initializers = {
     'amount': lambda o: _convert_monetary_str(o.value),
     'running_balance': lambda o: _convert_monetary_str(o.running_balance),
     'enter_date': lambda o: _convert_datetime(o.enter_date)
-}).custom_mappings({
+}
+
+
+inverse_split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
+    account_mapper, core.Account
+).target_initializers(_split_initializers).custom_mappings({
+    'transaction': None,
+    'inverse': None
+})
+
+
+split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
+    transaction_with_split_mapper, core.Transaction
+).target_initializers(dict({
+    'inverse': lambda o: o and inverse_split_mapper.map(o)
+}, **_split_initializers)).custom_mappings({
     'account': None
 })
 
