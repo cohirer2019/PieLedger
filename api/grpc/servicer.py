@@ -118,7 +118,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             find_inverse = meta.get('inverse')
             for s in splits:
                 if not find_inverse:
-                    s.inverse = split_mgr.find_inverse(s)
+                    s.inverses = split_mgr.find_inverse(s)
                 yield map_action_to_pb(s, split_mapper.map(s))
         except ValueError as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)

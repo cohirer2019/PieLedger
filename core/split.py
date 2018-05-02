@@ -38,14 +38,17 @@ class SplitManager(BaseManager):
         Split(**kwargs)
 
     def find_splits(
-            self, account_guid, from_dt=None, to_dt=None,
+            self, account_guid=None, from_dt=None, to_dt=None,
             by_action=None, page_number=0, result_per_page=None):
-        acc = account_guid and self.book.query(Account).get(account_guid)
-        if not acc:
-            raise ValueError('account<%s> not found' % account_guid)
+        filters = []
 
-        filters = [(Split.account_guid.in_(
-            [a.guid for a in _find_with_children(acc)]))]
+        if account_guid:
+            acc = account_guid and self.book.query(Account).get(account_guid)
+            if not acc:
+                raise ValueError('account<%s> not found' % account_guid)
+            filters.append(Split.account_guid.in_(
+                [a.guid for a in _find_with_children(acc)]))
+
         if by_action:
             filters.append(Split.action == by_action)
         if from_dt:
@@ -71,8 +74,7 @@ class SplitManager(BaseManager):
         """Find the most posible split with was tranfering at the inverse
            direction
         """
-        for s in split.transaction.splits:
-            if s == split:
-                continue
-            if s.value == -split.value and s.account != split.account:
-                return s
+        sign = split.value > 0
+        return (
+            s for s in split.transaction.splits
+            if (s.value > 0) != sign)

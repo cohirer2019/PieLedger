@@ -56,6 +56,8 @@ enum SplitAction {
   CASHOUT = 6; 
   R = 7;
   REFUND = 7;
+  C = 8;
+  CONFER = 8;
 }
 
 message Split {
@@ -70,7 +72,7 @@ message Split {
   string memo = 6;
   Transaction transaction = 7;
   google.protobuf.Timestamp enter_date = 8;
-  Split inverse = 9;
+  repeated Split inverses = 9;
 }
 
 message Transaction {

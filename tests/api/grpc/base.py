@@ -4,7 +4,7 @@ from collections import namedtuple
 import grpc_testing
 
 from api.grpc import services_pb2
-from api.grpc.pieledger import PieLedger
+from api.grpc.servicer import PieLedger
 from ...core.base import BaseTestCase
 
 RPCResult = namedtuple('RPCResult', ['metadata', 'code', 'detail'])
