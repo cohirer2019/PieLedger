@@ -110,6 +110,19 @@ class GrpcSplitTest(PieLedgerGrpcTest):
         initial_metadata = dict(result.initial_metadata)
         self.assertEqual(int(initial_metadata.get('total')), 2)
 
+        # Search by account name
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                account=ledger_pb2.Account(name='credit')))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        self.assertEqual(len(list(response)), 0)
+
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                account=ledger_pb2.Account(name='Acc 1')))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        self.assertEqual(len(list(response)), 5)
+
     @book_context
     def test_find_splits_failed(self, book):
         # Account is required

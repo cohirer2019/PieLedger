@@ -39,7 +39,7 @@ class SplitManager(BaseManager):
 
     def find_splits(
             self, account_guid=None, from_dt=None, to_dt=None,
-            by_action=None, page_number=0, result_per_page=None):
+            by_action=None, by_name=None, page_number=0, result_per_page=None):
         filters = []
 
         if account_guid:
@@ -57,9 +57,12 @@ class SplitManager(BaseManager):
         if to_dt:
             filters.append(
                 Split.enter_date <= to_dt.replace(microsecond=0))
+        if by_name:
+            filters.append(Account.name == by_name)
 
         query = self.book.query(
-            Split).filter(*filters).order_by(Split.enter_date.desc())
+            Split).join(Account).filter(*filters).order_by(
+            Split.enter_date.desc())
         result_per_page = result_per_page or 20
         query = query.offset(
             page_number * result_per_page).limit(result_per_page)

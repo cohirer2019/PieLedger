@@ -129,7 +129,8 @@ split_query_mapper = OneWayMapper(
     'account_guid': lambda o: o.account.guid,
     'from_dt': lambda o: _map_timestamp(o.from_datetime),
     'to_dt': lambda o: _map_timestamp(o.to_datetime),
-    'by_action': _map_action_to_model
+    'by_action': _map_action_to_model,
+    'by_name': lambda o: o.account.name
 })
 
 
