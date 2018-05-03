@@ -16,6 +16,8 @@ message SplitQueryRequest {
   int32 page_number = 1;
   int32 result_per_page = 2;
   Account account = 5;
+  string account_name = 8;
+  string transref = 9;
   google.protobuf.Timestamp from_datetime = 3;
   google.protobuf.Timestamp to_datetime = 4;
   oneof by_action {

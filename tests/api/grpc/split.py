@@ -113,15 +113,25 @@ class GrpcSplitTest(PieLedgerGrpcTest):
         # Search by account name
         response, result = self.unary_stream(
             'FindSplits', services_pb2.SplitQueryRequest(
-                account=ledger_pb2.Account(name='credit')))
+                account=ledger_pb2.Account(),
+                account_name='credit'))
         self.assertEqual(result.code, grpc.StatusCode.OK)
         self.assertEqual(len(list(response)), 0)
 
         response, result = self.unary_stream(
             'FindSplits', services_pb2.SplitQueryRequest(
-                account=ledger_pb2.Account(name='Acc 1')))
+                account=ledger_pb2.Account(),
+                account_name='Acc 1'))
         self.assertEqual(result.code, grpc.StatusCode.OK)
         self.assertEqual(len(list(response)), 5)
+
+        # Search by transaction reference
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                account=ledger_pb2.Account(),
+                transref='X201804201'))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        self.assertEqual(len(list(response)), 2)
 
     @book_context
     def test_find_splits_failed(self, book):

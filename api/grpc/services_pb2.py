@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='services.proto',
   package='pieledger',
   syntax='proto3',
-  serialized_pb=_b('\n\x0eservices.proto\x12\tpieledger\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x0cledger.proto\"{\n\x17TransactionQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12\r\n\x05guids\x18\x03 \x03(\t\x12#\n\x07\x61\x63\x63ount\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\"\xa3\x02\n\x11SplitQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12#\n\x07\x61\x63\x63ount\x18\x05 \x01(\x0b\x32\x12.pieledger.Account\x12\x31\n\rfrom_datetime\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0bto_datetime\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x31\n\x0fstandard_action\x18\x06 \x01(\x0e\x32\x16.pieledger.SplitActionH\x00\x12\x17\n\rcustom_action\x18\x07 \x01(\tH\x00\x42\x0b\n\tby_action\"o\n\x17TransactionAlterRequest\x12+\n\x0btransaction\x18\x01 \x01(\x0b\x32\x16.pieledger.Transaction\x12\'\n\rappend_splits\x18\x02 \x03(\x0b\x32\x10.pieledger.Split2\xa9\x03\n\tPieLedger\x12=\n\x13\x46indOrCreateAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x36\n\x0c\x41lterAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x43\n\x11\x43reateTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transaction\x12P\n\x10\x46indTransactions\x12\".pieledger.TransactionQueryRequest\x1a\x16.pieledger.Transaction0\x01\x12N\n\x10\x41lterTransaction\x12\".pieledger.TransactionAlterRequest\x1a\x16.pieledger.Transaction\x12>\n\nFindSplits\x12\x1c.pieledger.SplitQueryRequest\x1a\x10.pieledger.Split0\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x0eservices.proto\x12\tpieledger\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x0cledger.proto\"{\n\x17TransactionQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12\r\n\x05guids\x18\x03 \x03(\t\x12#\n\x07\x61\x63\x63ount\x18\x04 \x01(\x0b\x32\x12.pieledger.Account\"\xcb\x02\n\x11SplitQueryRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x17\n\x0fresult_per_page\x18\x02 \x01(\x05\x12#\n\x07\x61\x63\x63ount\x18\x05 \x01(\x0b\x32\x12.pieledger.Account\x12\x14\n\x0c\x61\x63\x63ount_name\x18\x08 \x01(\t\x12\x10\n\x08transref\x18\t \x01(\t\x12\x31\n\rfrom_datetime\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0bto_datetime\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x31\n\x0fstandard_action\x18\x06 \x01(\x0e\x32\x16.pieledger.SplitActionH\x00\x12\x17\n\rcustom_action\x18\x07 \x01(\tH\x00\x42\x0b\n\tby_action\"o\n\x17TransactionAlterRequest\x12+\n\x0btransaction\x18\x01 \x01(\x0b\x32\x16.pieledger.Transaction\x12\'\n\rappend_splits\x18\x02 \x03(\x0b\x32\x10.pieledger.Split2\xa9\x03\n\tPieLedger\x12=\n\x13\x46indOrCreateAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x36\n\x0c\x41lterAccount\x12\x12.pieledger.Account\x1a\x12.pieledger.Account\x12\x43\n\x11\x43reateTransaction\x12\x16.pieledger.Transaction\x1a\x16.pieledger.Transaction\x12P\n\x10\x46indTransactions\x12\".pieledger.TransactionQueryRequest\x1a\x16.pieledger.Transaction0\x01\x12N\n\x10\x41lterTransaction\x12\".pieledger.TransactionAlterRequest\x1a\x16.pieledger.Transaction\x12>\n\nFindSplits\x12\x1c.pieledger.SplitQueryRequest\x1a\x10.pieledger.Split0\x01\x62\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,ledger__pb2.DESCRIPTOR,])
 
@@ -109,28 +109,42 @@ _SPLITQUERYREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='from_datetime', full_name='pieledger.SplitQueryRequest.from_datetime', index=3,
+      name='account_name', full_name='pieledger.SplitQueryRequest.account_name', index=3,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='transref', full_name='pieledger.SplitQueryRequest.transref', index=4,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='from_datetime', full_name='pieledger.SplitQueryRequest.from_datetime', index=5,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='to_datetime', full_name='pieledger.SplitQueryRequest.to_datetime', index=4,
+      name='to_datetime', full_name='pieledger.SplitQueryRequest.to_datetime', index=6,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='standard_action', full_name='pieledger.SplitQueryRequest.standard_action', index=5,
+      name='standard_action', full_name='pieledger.SplitQueryRequest.standard_action', index=7,
       number=6, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='custom_action', full_name='pieledger.SplitQueryRequest.custom_action', index=6,
+      name='custom_action', full_name='pieledger.SplitQueryRequest.custom_action', index=8,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -152,7 +166,7 @@ _SPLITQUERYREQUEST = _descriptor.Descriptor(
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=202,
-  serialized_end=493,
+  serialized_end=533,
 )
 
 
@@ -189,8 +203,8 @@ _TRANSACTIONALTERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=495,
-  serialized_end=606,
+  serialized_start=535,
+  serialized_end=646,
 )
 
 _TRANSACTIONQUERYREQUEST.fields_by_name['account'].message_type = ledger__pb2._ACCOUNT
@@ -240,8 +254,8 @@ _PIELEDGER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=609,
-  serialized_end=1034,
+  serialized_start=649,
+  serialized_end=1074,
   methods=[
   _descriptor.MethodDescriptor(
     name='FindOrCreateAccount',

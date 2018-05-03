@@ -2,7 +2,7 @@
 from decimal import Decimal
 
 from sqlalchemy import func
-from piecash.core import Split, Account
+from piecash.core import Split, Account, Transaction
 
 from .base import BaseManager
 from .utils import currency_decimal
@@ -39,8 +39,11 @@ class SplitManager(BaseManager):
 
     def find_splits(
             self, account_guid=None, from_dt=None, to_dt=None,
-            by_action=None, by_name=None, page_number=0, result_per_page=None):
+            by_action=None, account_name=None, transref=None,
+            page_number=0, result_per_page=None,):
         filters = []
+        query = self.book.query(Split)
+        count_query = self.session.query(func.count(Split.guid))
 
         if account_guid:
             acc = account_guid and self.book.query(Account).get(account_guid)
@@ -57,18 +60,22 @@ class SplitManager(BaseManager):
         if to_dt:
             filters.append(
                 Split.enter_date <= to_dt.replace(microsecond=0))
-        if by_name:
-            filters.append(Account.name == by_name)
+        if account_name:
+            query = query.join(Account)
+            count_query = count_query.join(Account)
+            filters.append(Account.name == account_name)
+        if transref:
+            query = query.join(Transaction)
+            count_query = count_query.join(Transaction)
+            filters.append(Transaction.num == transref)
 
-        query = self.book.query(
-            Split).join(Account).filter(*filters).order_by(
+        query = query.filter(*filters).order_by(
             Split.enter_date.desc())
         result_per_page = result_per_page or 20
         query = query.offset(
             page_number * result_per_page).limit(result_per_page)
 
-        count_query = self.session.query(
-            func.count(Split.guid)).filter(*filters)
+        count_query = count_query.filter(*filters)
 
         return query.all(), count_query.scalar()
 
