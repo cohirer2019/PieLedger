@@ -143,6 +143,12 @@ def _patch_get_engine():
     from sqlalchemy import event, create_engine as sa_create_engine
     from piecash.core import session
 
+    def _sign(val):
+        if val:
+            return 1 if val > 0 else -1
+        else:
+            return val
+
     def _create_piecash_engine(uri_conn, **kw):
         connect_args = kw.pop('connect_args', {})
         if uri_conn.startswith('sqlite:'):
@@ -158,6 +164,8 @@ def _patch_get_engine():
                 # disable pysqlite's emitting of the BEGIN statement entirely.
                 # also stops it from emitting COMMIT before any DDL.
                 dbapi_connection.isolation_level = None
+                # Custom sign function
+                dbapi_connection.create_function("sign", 1, _sign)
 
             @event.listens_for(engine, "begin")
             def do_begin(conn):
