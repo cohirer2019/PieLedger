@@ -82,7 +82,9 @@ class SplitManager(BaseManager):
                 inverse, inverse.transaction_guid == Transaction.guid)
             count_query = count_query.join(
                 inverse, inverse.transaction_guid == Transaction.guid)
-            filters.append(inverse.account_guid == inverse_acc_id)
+            filters.extend((
+                inverse.account_guid == inverse_acc_id,
+                func.sign(inverse._value_num) != func.sign(Split._value_num)))
 
         query = query.filter(*filters).order_by(
             Split.enter_date.desc())
