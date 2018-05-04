@@ -15,15 +15,17 @@ message TransactionQueryRequest {
 message SplitQueryRequest {
   int32 page_number = 1;
   int32 result_per_page = 2;
-  Account account = 5;
-  string account_name = 8;
-  string transref = 9;
   google.protobuf.Timestamp from_datetime = 3;
   google.protobuf.Timestamp to_datetime = 4;
+  Account account = 5;
   oneof by_action {
     SplitAction standard_action = 6;
     string custom_action = 7;
   }
+  string account_name = 8;
+  string transref = 9;
+  string guid = 10;
+  string inverse_acc_id = 11;
 }
 
 message TransactionAlterRequest {

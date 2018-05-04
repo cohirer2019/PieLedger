@@ -2,6 +2,7 @@
 from decimal import Decimal
 
 from sqlalchemy import func
+from sqlalchemy.orm import aliased
 from piecash.core import Split, Account, Transaction
 
 from .base import BaseManager
@@ -38,12 +39,15 @@ class SplitManager(BaseManager):
         Split(**kwargs)
 
     def find_splits(
-            self, account_guid=None, from_dt=None, to_dt=None,
+            self, guid=None, account_guid=None, from_dt=None, to_dt=None,
             by_action=None, account_name=None, transref=None,
-            page_number=0, result_per_page=None,):
+            inverse_acc_id=None, page_number=0, result_per_page=None):
         filters = []
         query = self.book.query(Split)
         count_query = self.session.query(func.count(Split.guid))
+
+        if guid:
+            filters.append(Split.guid == guid)
 
         if account_guid:
             acc = account_guid and self.book.query(Account).get(account_guid)
@@ -64,10 +68,21 @@ class SplitManager(BaseManager):
             query = query.join(Account)
             count_query = count_query.join(Account)
             filters.append(Account.name == account_name)
-        if transref:
+
+        if transref or inverse_acc_id:
             query = query.join(Transaction)
             count_query = count_query.join(Transaction)
+
+        if transref:
             filters.append(Transaction.num == transref)
+
+        if inverse_acc_id:
+            inverse = aliased(Split, name='inverse')
+            query = query.join(
+                inverse, inverse.transaction_guid == Transaction.guid)
+            count_query = count_query.join(
+                inverse, inverse.transaction_guid == Transaction.guid)
+            filters.append(inverse.account_guid == inverse_acc_id)
 
         query = query.filter(*filters).order_by(
             Split.enter_date.desc())
