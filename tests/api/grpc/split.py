@@ -133,6 +133,30 @@ class GrpcSplitTest(PieLedgerGrpcTest):
         self.assertEqual(result.code, grpc.StatusCode.OK)
         self.assertEqual(len(list(response)), 2)
 
+        # Search by transaction split guid
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                guid='fake_guid'))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        self.assertEqual(len(list(response)), 0)
+
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                guid=trans.splits[0].guid))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        split = next(response)
+        self.assertEqual(split.guid, trans.splits[0].guid)
+        self.assertEqual(split.account.guid, trans.splits[0].account.guid)
+        self.assertEqual(
+            split.transaction.guid, trans.splits[0].transaction.guid)
+
+        # Search by inverse account id
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                inverse_acc_id=acc1_child.guid))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        self.assertEqual(len(list(response)), 5)
+
     @book_context
     def test_find_splits_failed(self, book):
         # Account is required
