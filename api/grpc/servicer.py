@@ -117,7 +117,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
             context.send_initial_metadata((('total', str(num)),))
             find_inverse = meta.get('inverse')
             for s in splits:
-                if not find_inverse:
+                if find_inverse:
                     s.inverses = split_mgr.find_inverse(s)
                 yield map_action_to_pb(s, split_mapper.map(s))
         except ValueError as e:
