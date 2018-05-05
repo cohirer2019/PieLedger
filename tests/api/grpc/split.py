@@ -165,3 +165,28 @@ class GrpcSplitTest(PieLedgerGrpcTest):
                 account=ledger_pb2.Account(guid='dummy')))
         self.assertEqual(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertIn('not found', result.detail)
+
+    @book_context
+    def test_find_with_inverses(self, book):
+        acc1 = self.make_account(book, 'Acc 1', 'ASSET')
+        acc2 = self.make_account(book, 'Acc 2', 'CASH')
+
+        self.transfer(acc1, acc2, 100)
+        book.save()
+
+        # Default query returns no inverses
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                account=ledger_pb2.Account(guid=acc1.guid)))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        self.assertFalse(next(response).inverses)
+
+        # Query with inverse in metadata
+        response, result = self.unary_stream(
+            'FindSplits', services_pb2.SplitQueryRequest(
+                account=ledger_pb2.Account(guid=acc1.guid)),
+            meta=(('inverse', 'true'),))
+        self.assertEqual(result.code, grpc.StatusCode.OK)
+        inverses = next(response).inverses
+        self.assertEqual(len(inverses), 1)
+        self.assertEqual(inverses[0].account.guid, acc2.guid)

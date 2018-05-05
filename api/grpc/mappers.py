@@ -96,7 +96,9 @@ split_mapper = OneWayMapper(ledger_pb2.Split).nested_mapper(
     transaction_with_split_mapper, core.Transaction
 ).nested_mapper(
     account_mapper, core.Account
-).target_initializers(dict({
+).custom_mappings({
+    'inverses': None
+}).target_initializers(dict({
     'inverses': lambda o: (map_action_to_pb(
         s, inverse_split_mapper.map(s)) for s in getattr(o, 'inverses', []))
 }, **_split_initializers))

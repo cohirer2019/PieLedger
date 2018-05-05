@@ -38,13 +38,13 @@ class SplitManager(BaseManager):
             raise ValueError('invalid value range!')
         Split(**kwargs)
 
-    def find_splits(
+    def find_splits(  # noqa
             self, guid=None, account_guid=None, from_dt=None, to_dt=None,
             by_action=None, account_name=None, transref=None,
             inverse_acc_id=None, page_number=0, result_per_page=None):
+
         filters = []
         query = self.book.query(Split)
-        count_query = self.session.query(func.count(Split.guid))
 
         if guid:
             filters.append(Split.guid == guid)
@@ -64,44 +64,65 @@ class SplitManager(BaseManager):
         if to_dt:
             filters.append(
                 Split.enter_date <= to_dt.replace(microsecond=0))
+
         if account_name:
-            query = query.join(Account)
-            count_query = count_query.join(Account)
+            query = query.outerjoin(Account)
             filters.append(Account.name == account_name)
 
         if transref or inverse_acc_id:
-            query = query.join(Transaction)
-            count_query = count_query.join(Transaction)
+            query = query.outerjoin(Transaction)
 
         if transref:
             filters.append(Transaction.num == transref)
 
         if inverse_acc_id:
             inverse = aliased(Split, name='inverse')
-            query = query.join(
-                inverse, inverse.transaction_guid == Transaction.guid)
-            count_query = count_query.join(
-                inverse, inverse.transaction_guid == Transaction.guid)
+            query = query.outerjoin(
+                inverse, inverse.transaction_guid == Transaction.guid
+            ).group_by(Split.guid)
             filters.extend((
-                inverse.account_guid == inverse_acc_id,
-                func.sign(inverse._value_num) != func.sign(Split._value_num)))
+                func.sign(inverse._value_num) != func.sign(Split._value_num),
+                inverse.account_guid == inverse_acc_id))
 
-        query = query.filter(*filters).order_by(
-            Split.enter_date.desc())
+        query = query.filter(*filters)
+        count = self.get_count(query)
+
+        # Pre-join for results
+        query = self.eager_load(query, Transaction, Split.transaction)
+        query = self.eager_load(query, Account, Split.account)
+        query = self.eager_load(
+            query, aliased(Account, name='parent_acc'), Split.account,
+            Account.parent)
+
+        # Paging
         result_per_page = result_per_page or 20
-        query = query.offset(
-            page_number * result_per_page).limit(result_per_page)
+        query = query.order_by(
+            Split.enter_date.desc()).offset(
+                page_number * result_per_page).limit(result_per_page)
 
-        count_query = count_query.filter(*filters)
+        return query.all(), count
 
-        return query.all(), count_query.scalar()
+    def find_inverses(self, splits):
+        split_map = {s.guid: s for s in splits}
+        inverse = aliased(Split, name='inverse')
 
-    @staticmethod
-    def find_inverse(split):
-        """Find the most posible split with was tranfering at the inverse
-           direction
-        """
-        sign = split.value > 0
-        return (
-            s for s in split.transaction.splits
-            if (s.value > 0) != sign)
+        query = self.book.query(Split).join(Transaction).join(
+            inverse, Transaction.guid == inverse.transaction_guid
+        ).filter(
+            func.sign(inverse._value_num) != func.sign(Split._value_num),
+            Split.guid.in_(split_map.keys())
+        )
+
+        # Pre-join for results
+        query = self.eager_load(query, Transaction, Split.transaction)
+        query = self.eager_load(
+            query, inverse, Split.transaction, Transaction.splits)
+        query = self.eager_load(
+            query, Account, Split.transaction, Transaction.splits,
+            inverse.account)
+        query = self.eager_load(
+            query, aliased(Account, name='parent_acc'), Split.transaction,
+            Transaction.splits, inverse.account, Account.parent)
+
+        for s in query:
+            split_map[s.guid].inverses = s.transaction.splits
