@@ -16,7 +16,8 @@ def _patch_hybird_property(hybrid_property, num_col, denom_col):
         # The method with piecash lose the info of denom and we return it
         # with the new method here
         num, denom = getattr(self, num_name), getattr(self, denom_name)
-        return num and Decimal(1) / denom * num
+        if num is not None:
+            return Decimal(1) / denom * num
 
     return hybrid_property.overrides.expression(_expr).overrides.getter(_fget)
 

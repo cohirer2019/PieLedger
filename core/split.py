@@ -30,7 +30,7 @@ class SplitManager(BaseManager):
             raise ValueError('currency must identical')
         if value_str:
             kwargs['value'] = Decimal(value_str)
-        elif value_int:
+        else:
             kwargs['value'] = currency_decimal(
                 value_int, transaction.currency
             ) / transaction.currency.fraction
