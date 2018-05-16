@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+adduser --quiet --system pieledger-daemon

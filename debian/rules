@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+PACKAGE = $(shell dh_listpackages)
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	dh_auto_install -- --install-lib /opt/pieledger/lib/python3.4/site-packages --install-data /opt/pieledger/lib/python3.4/site-packages --install-scripts /opt/pieledger/bin
+	# Do not hardcode the python interpreter
+	sed -i '1c#!/opt/pieledger/bin/python' $(CURDIR)/debian/$(PACKAGE)/opt/pieledger/bin/pieledger
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf build *egg-info
+
+override_dh_installinit:
+	dh_installinit -r --name=pieledger
+	dh_installinit -r --name=pieledger-grpc

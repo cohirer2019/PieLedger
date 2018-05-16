@@ -1,0 +1,13 @@
+Source: pieledger 
+Section: unknown
+Priority: extra
+Maintainer: CoHirer Inc. <info@cohirer.com>
+XS-Python-Version: 3.4
+Build-Depends: python3, debhelper (>=9)
+Standards-Version: 3.9.4
+Homepage: http://www.cohirer.com
+
+Package: pieledger-api
+Architecture: any
+Depends: pieledger-env (>=1.0.0ubuntu0), ${shlibs:Depends}, ${misc:Depends}
+Description: Ledger System based on PieCash / GnuCash 

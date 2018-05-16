@@ -1,0 +1,2 @@
+# Configuration Path 
+PIELEDGER_CONFIG=/opt/pieledger/config.yml
