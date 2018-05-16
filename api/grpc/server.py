@@ -12,7 +12,19 @@ from . import servicer
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
+def _setup_logging():
+    sentry_dsn = ledger_config.get('sentry_dsn')
+    if sentry_dsn:
+        import logging
+        from raven.handlers.logging import SentryHandler
+        from raven.conf import setup_logging
+        handler = SentryHandler(sentry_dsn, level=logging.WARNING)
+        setup_logging(handler)
+
+
 def serve(bind_addr='[::]:50051'):
+    _setup_logging()
+
     # TODO: remove the cpu_count call when upgraded to python 3.6
     server = grpc.server(futures.ThreadPoolExecutor(cpu_count()))
     services_pb2_grpc.add_PieLedgerServicer_to_server(

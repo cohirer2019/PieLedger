@@ -1,3 +1,4 @@
 db_uri: "mysql+pymysql://[username]:[password]@localhost/pieledger?charset=utf8"
+sentry_dsn:
 grpc:
     bind_addr:

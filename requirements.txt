@@ -5,3 +5,4 @@ piecash==0.16.0
 PyMySQL==0.8.0
 PyYAML==3.12
 requests==2.18.4
+raven==6.8.0
