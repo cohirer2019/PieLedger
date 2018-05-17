@@ -11,7 +11,7 @@ if not config_path:
         os.path.join(os.path.dirname(__file__), '../config.yml'))
 
 try:
-    with open(config_path, 'r+') as ymlfile:
+    with open(config_path) as ymlfile:
         ledger_config = yaml.load(ymlfile)
 except IOError:
     print('Failed to locate config.yml')

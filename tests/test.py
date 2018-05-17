@@ -17,7 +17,7 @@ def _load_test_config():
     try:
         config_path = os.path.abspath(
             os.path.join(os.path.dirname(__file__), 'config.yml'))
-        with open(config_path, 'r+') as ymlfile:
+        with open(config_path) as ymlfile:
             test_config = yaml.load(ymlfile)
             if test_config:
                 ledger_config.update(test_config)
