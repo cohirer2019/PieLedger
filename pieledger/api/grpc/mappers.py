@@ -8,7 +8,7 @@ from mapperpy.attributes_util import get_attributes as _get_attributes, \
     AttributesCache as _AttributesCache
 from piecash import core
 
-from core.split import SplitManager
+from pieledger.core.split import SplitManager
 from . import ledger_pb2
 
 

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import grpc
 from piecash.core import Split
 
-from api.grpc import ledger_pb2, services_pb2
+from pieledger.api.grpc import ledger_pb2, services_pb2
 from tests.core.base import book_context
 from .base import PieLedgerGrpcTest
 

@@ -35,7 +35,7 @@ def _patch_account():  #noqa
     from piecash.core import Account, Split
     from piecash.core.account import ACCOUNT_TYPES, \
         _is_parent_child_types_consistent, root_types, GncConversionError
-    from core.utils import currency_decimal
+    from .utils import currency_decimal
 
     def _sa_validate(self):
         if self.type not in ACCOUNT_TYPES:

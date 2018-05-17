@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 import grpc
 
-from api.grpc import ledger_pb2
-from api.grpc.mappers import account_mapper
+from pieledger.api.grpc import ledger_pb2
+from pieledger.api.grpc.mappers import account_mapper
+
+from core.base import book_context
 from .base import PieLedgerGrpcTest
-from ...core.base import book_context
 
 
 class GrpcAccountTest(PieLedgerGrpcTest):

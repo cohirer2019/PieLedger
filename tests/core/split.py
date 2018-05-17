@@ -4,7 +4,7 @@ import threading
 import backoff
 from sqlalchemy.exc import DatabaseError
 
-from core.book import open_book
+from pieledger.core.book import open_book
 from .base import BaseTestCase, book_context
 
 

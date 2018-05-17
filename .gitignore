@@ -1,10 +1,10 @@
 *.pyc
 *.swp
 *.egg-info/
+*.eggs
 build/
 dist/
 .ropeproject
 .sqlite
 .coverage
-config.yml
-config_test.yml
+*config.yml

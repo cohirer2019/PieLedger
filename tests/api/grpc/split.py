@@ -5,7 +5,7 @@ from decimal import Decimal
 import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from api.grpc import services_pb2, ledger_pb2
+from pieledger.api.grpc import services_pb2, ledger_pb2
 from tests.core.base import book_context
 from .base import PieLedgerGrpcTest
 

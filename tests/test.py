@@ -1,22 +1,28 @@
 # -*- coding:utf-8 -*-
 import sys
+import os
 import warnings
 
 import nose
 import yaml
 
-from core.config import ledger_config
-from core.book import create_book
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')))
+
+from pieledger.core.config import ledger_config  # noqa
+from pieledger.core.book import create_book  # noqa
 
 
 def _load_test_config():
     try:
-        with open('config_test.yml', 'r+') as ymlfile:
+        config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), 'config.yml'))
+        with open(config_path, 'r+') as ymlfile:
             test_config = yaml.load(ymlfile)
             if test_config:
                 ledger_config.update(test_config)
     except IOError:
-        warnings.warn('Failed to locate config_test.yml')
+        warnings.warn('Failed to locate config.yml for testing')
 
 
 class LedgerInitializer(nose.plugins.Plugin):
@@ -44,6 +50,6 @@ if __name__ == '__main__':
     additional_args = [
         '--rednose', '--nocapture', '--hide-skips', '--verbosity=2']
     nose.main(
-        module='tests', argv=sys.argv.extend(additional_args),
+        argv=sys.argv.extend(additional_args),
         addplugins=[LedgerInitializer()]
     )

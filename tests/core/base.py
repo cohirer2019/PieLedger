@@ -10,7 +10,7 @@ from piecash.core import Account, Transaction, Split, \
 from piecash.core.session import adapt_session as _adapt_session, \
     create_piecash_engine as _create_engine
 
-from core.book import open_book
+from pieledger.core.book import open_book
 
 
 def adapt_session(session, book, readonly):

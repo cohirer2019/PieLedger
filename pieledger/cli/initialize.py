@@ -2,7 +2,7 @@
 import click
 from piecash import GnucashException
 
-from core.book import create_book
+from pieledger.core.book import create_book
 
 
 @click.command()

@@ -5,7 +5,7 @@ import time
 
 import grpc
 
-from core.config import ledger_config
+from pieledger.core.config import ledger_config
 from . import services_pb2_grpc
 from . import servicer
 

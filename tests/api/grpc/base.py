@@ -3,9 +3,9 @@ from collections import namedtuple
 
 import grpc_testing
 
-from api.grpc import services_pb2
-from api.grpc.servicer import PieLedger
-from ...core.base import BaseTestCase
+from pieledger.api.grpc import services_pb2
+from pieledger.api.grpc.servicer import PieLedger
+from core.base import BaseTestCase
 
 RPCResult = namedtuple('RPCResult', ['metadata', 'code', 'detail'])
 RPCStreamResult = namedtuple(

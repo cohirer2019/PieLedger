@@ -9,5 +9,5 @@ def grpc():
 
 @grpc.command()
 def start():
-    from api.grpc.server import serve
+    from pieledger.api.grpc.server import serve
     serve()
