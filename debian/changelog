@@ -1,3 +1,9 @@
+pieledger (1.0.0ubuntu2) trusty; urgency=medium
+
+  * Bumpped version for grpc / piecash
+
+ -- Flow Jiang <flowjzh@intrepid>  Fri, 18 May 2018 23:01:24 +0800
+
 pieledger (1.0.0ubuntu1) trusty; urgency=medium
 
   * Read config from environment
