@@ -5,8 +5,8 @@ def _patch_hybird_property(hybrid_property, num_col, denom_col):
     from decimal import Decimal
 
     num_name, denom_name = \
-        "_{}".format(num_col.name), "_{}".format(denom_col.name)
-    name = num_col.name.split("_")[0]
+        '_{}'.format(num_col.name), '_{}'.format(denom_col.name)
+    name = num_col.name.rsplit('_', 1)[0]
 
     def _expr(cls):
         # No cast required for mysql

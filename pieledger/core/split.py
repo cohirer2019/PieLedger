@@ -6,7 +6,7 @@ from sqlalchemy.orm import aliased
 from piecash.core import Split, Account, Transaction
 
 from .base import BaseManager
-from .utils import currency_decimal
+from .utils import currency_decimal, normalize_dt
 
 
 def _find_with_children(acc):
@@ -59,11 +59,9 @@ class SplitManager(BaseManager):
         if by_action:
             filters.append(Split.action == by_action)
         if from_dt:
-            filters.append(
-                Split.enter_date >= from_dt.replace(microsecond=0))
+            filters.append(Split.enter_date >= normalize_dt(from_dt))
         if to_dt:
-            filters.append(
-                Split.enter_date <= to_dt.replace(microsecond=0))
+            filters.append(Split.enter_date <= normalize_dt(to_dt))
 
         if account_name:
             query = query.outerjoin(Account)
