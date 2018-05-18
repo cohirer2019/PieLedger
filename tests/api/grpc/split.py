@@ -22,6 +22,7 @@ class GrpcSplitTest(PieLedgerGrpcTest):
         ROUNDS = 5
         for r in range(ROUNDS):
             enter_date = datetime.now() + timedelta(minutes=r)
+            utc_enter_date = datetime.utcnow() + timedelta(minutes=r)
             trans = self.transfer(acc1, acc2, r*2, enter_date=enter_date)
             trans.description = 'Round %s main transfer' % r
             trans.splits[0].action = 'B'
@@ -101,7 +102,8 @@ class GrpcSplitTest(PieLedgerGrpcTest):
 
         # Search by time
         from_dt = Timestamp()
-        from_dt.FromDatetime(enter_date)
+        # Should always pass utc time for the RPC
+        from_dt.FromDatetime(utc_enter_date)
         response, result = self.unary_stream(
             'FindSplits', services_pb2.SplitQueryRequest(
                 account=ledger_pb2.Account(guid=acc1.guid),
