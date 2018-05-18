@@ -9,8 +9,9 @@ setup(
     include_package_data=True,
     install_requires=[
         'click==6.7',
-        'grpcio==1.11',
-        'piecash==0.16.0',
+        'grpcio==1.12',
+        'protobuf>=3.5.2',
+        'piecash==0.18.0',
         'PyMySQL==0.8.0',
         'PyYAML==3.12',
         'requests==2.18.4',

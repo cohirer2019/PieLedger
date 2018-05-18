@@ -10,7 +10,10 @@ setup(
         'pieledger.api.grpc.services_pb2_grpc'
     ],
     package_dir={'pieledger.api.grpc': ''},
-    install_requires=['protobuf >= 3.5.2'],
+    install_requires=[
+        'grpcio=1.12.0',
+        'protobuf>=3.5.2'
+    ],
     url='http://dev.smart4e.com/cohirer/pieledger',
     license='Apache License 2.0',
     author='CoHirer Inc.',
