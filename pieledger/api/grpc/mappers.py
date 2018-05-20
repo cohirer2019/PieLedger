@@ -161,7 +161,9 @@ split_with_trans_mapper = OneWayMapper(
 
 transaction_mapper = OneWayMapper(
     ledger_pb2.Transaction
-).target_initializers({
+).custom_mappings({
+    'num': 'reference'
+}).target_initializers({
     'splits': lambda o: [split_with_trans_mapper.map(s) for s in o.splits],
     'currency': lambda obj: obj.currency.mnemonic
 })
