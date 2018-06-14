@@ -58,6 +58,10 @@ enum SplitAction {
   REFUND = 7;
   C = 8;
   CONFER = 8;
+  H = 9;
+  SHARE = 9;
+  P = 10;
+  PROFIT = 10;
 }
 
 message Split {

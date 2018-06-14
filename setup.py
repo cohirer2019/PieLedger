@@ -3,13 +3,13 @@ from setuptools import setup
 
 setup(
     name='PieLedger',
-    version='1.0.0',
+    version='1.0.2',
     setup_requires=['setuptools-git'],
     packages=['pieledger'],
     include_package_data=True,
     install_requires=[
         'click==6.7',
-        'grpcio==1.12',
+        'grpcio==1.12.1',
         'protobuf>=3.5.2',
         'piecash==0.18.0',
         'PyMySQL==0.8.0',

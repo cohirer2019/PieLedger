@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from decimal import Decimal
+from __future__ import division
 
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
@@ -28,14 +28,11 @@ class SplitManager(BaseManager):
             raise ValueError('account<%s> not found' % account_guid)
         if transaction.currency != kwargs['account'].commodity:
             raise ValueError('currency must identical')
-        if value_str:
-            kwargs['value'] = Decimal(value_str)
-        else:
-            kwargs['value'] = currency_decimal(
-                value_int, transaction.currency
-            ) / transaction.currency.fraction
-        if kwargs['value'] * transaction.currency.fraction % 1 != 0:
+        value = float(value_str) if value_str else \
+            value_int / transaction.currency.fraction
+        if value * transaction.currency.fraction % 1 != 0:
             raise ValueError('invalid value range!')
+        kwargs['value'] = currency_decimal(value, transaction.currency)
         Split(**kwargs)
 
     def find_splits(  # noqa
