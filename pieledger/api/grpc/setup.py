@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='PieLedger-Grpc',
-    version='1.0.1',
+    version='1.0.2',
     namespace_packages=['pieledger', 'pieledger.api', 'pieledger.api.grpc'],
     py_modules=[
         'pieledger.api.grpc.ledger_pb2',
@@ -11,7 +11,7 @@ setup(
     ],
     package_dir={'pieledger.api.grpc': ''},
     install_requires=[
-        'grpcio=1.12.0',
+        'grpcio==1.12.1',
         'protobuf>=3.5.2'
     ],
     url='http://dev.smart4e.com/cohirer/pieledger',
