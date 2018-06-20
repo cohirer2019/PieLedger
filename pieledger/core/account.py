@@ -8,9 +8,13 @@ class AccountManager(BaseManager):
 
     model = Account
 
-    def find_by_parent(self, parent_guid, name, _type, placeholder):
+    def find_by_parent(
+            self, parent_guid, name, _type, placeholder, lock_parent=False):
         if not parent_guid and placeholder:
             parent_guid = self.book.root_account_guid
+        if lock_parent:
+            self.book.query(Account).with_for_update().get(parent_guid)
+
         return self.book.query(Account).filter(
             Account.parent_guid == parent_guid,
             Account.name == name,

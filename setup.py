@@ -16,7 +16,8 @@ setup(
         'PyYAML==3.12',
         'requests==2.18.4',
         'raven==6.8.0',
-        'MapperPy==0.11.1py34'
+        'MapperPy==0.11.1py34',
+        'backoff==1.5.0'
     ],
     dependency_links=[
         'git+http://dev.smart4e.com/cohirer/mapperpy.git@v0.11.1py34#egg=MapperPy-0.11.1py34'  #noqa
