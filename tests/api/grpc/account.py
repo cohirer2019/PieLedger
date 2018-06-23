@@ -1,9 +1,12 @@
 # -*- coding:utf-8 -*-
+import threading
+
 import grpc
+from piecash.core import Account
 
 from pieledger.api.grpc import ledger_pb2
 from pieledger.api.grpc.mappers import account_mapper
-
+from pieledger.core.book import open_book
 from core.base import book_context
 from .base import PieLedgerGrpcTest
 
@@ -165,3 +168,40 @@ class GrpcAccountTest(PieLedgerGrpcTest):
             ))
         self.assertIs(result.code, grpc.StatusCode.INVALID_ARGUMENT)
         self.assertIn('not found', result.detail)
+
+    @book_context(join_session=False)
+    def test_find_or_create_account_concurrent(self, book):
+        book.close()  # For SQLite
+
+        ACCOUNT_NAME = 'test_account_concurrent'
+        CONCURRENCY = 5
+        results = []
+
+        def clean_account():
+            with open_book() as book:
+                book.query(Account).filter(
+                    Account.name == ACCOUNT_NAME).delete()
+                book.save()
+        self.addCleanup(clean_account)
+
+        def find_or_create(self):
+            response, result = self.unary_unary(
+                'FindOrCreateAccount',
+                ledger_pb2.Account(
+                    name=ACCOUNT_NAME,
+                    type=ledger_pb2.INCOME,
+                    placeholder=True
+                ))
+            results.append(result.code)
+
+        threads = [
+            threading.Thread(target=find_or_create, args=[self])
+            for _ in range(CONCURRENCY)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        created = book.query(Account).filter(Account.name == ACCOUNT_NAME)
+        self.assertEqual(created.count(), 1)
+        self.assertEqual(results.count(grpc.StatusCode.OK), CONCURRENCY)

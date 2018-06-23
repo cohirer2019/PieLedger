@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import grpc
+from sqlalchemy.exc import DatabaseError
 
 from pieledger.core.book import book_context
 from pieledger.core.account import AccountManager
@@ -14,7 +15,7 @@ from . import services_pb2_grpc
 
 class PieLedger(services_pb2_grpc.PieLedgerServicer):
 
-    @book_context
+    @book_context(retry_for=DatabaseError)
     def FindOrCreateAccount(self, book, request, context):
         acc_mgr = AccountManager(book)
         meta = dict(context.invocation_metadata())
@@ -28,7 +29,7 @@ class PieLedger(services_pb2_grpc.PieLedgerServicer):
                 account = acc_mgr.find_by_parent(
                     request.parent.guid, request.name,
                     ledger_pb2.AccountType.Name(request.type),
-                    request.placeholder)
+                    request.placeholder, lock_parent=True)
                 if not account:
                     # Start nested session as a commit will be emited,
                     # which validates the account against the book

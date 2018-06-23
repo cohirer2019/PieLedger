@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import warnings
+import backoff
 from functools import wraps
 
 import piecash
@@ -45,7 +46,21 @@ def book_context(*args, **kw):
         @wraps(func)
         def func_wraper(self, *a, **ka):
             with open_book() as book:
-                return func(self, book, *a, **ka)
+                try:
+                    return func(self, book, *a, **ka)
+                except Exception:
+                    book.cancel()
+                    raise
+        if 'retry_for' in kw:
+            options = {
+                'jitter': backoff.full_jitter,
+                'interval': 0.2,
+                'max_tries': 3
+            }
+            options.update(kw.get('retry_options', {}))
+            return backoff.on_exception(
+                options.pop('wait_gen', backoff.constant),
+                kw['retry_for'], **options)(func_wraper)
         return func_wraper
 
     if args and callable(args[0]):
