@@ -9,5 +9,5 @@ Homepage: http://www.cohirer.com
 
 Package: pieledger-api
 Architecture: any
-Depends: pieledger-env (>=1.0.0ubuntu0), ${shlibs:Depends}, ${misc:Depends}
+Depends: pieledger-env (>=1.0.3ubuntu0), ${shlibs:Depends}, ${misc:Depends}
 Description: Ledger System based on PieCash / GnuCash 
