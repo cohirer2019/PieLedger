@@ -1,3 +1,9 @@
+pieledger (1.0.3ubuntu0) trusty; urgency=medium
+
+  * backoff 1.5.0
+
+ -- Flow Jiang <flowjzh@intrepid>  Sat, 23 Jun 2018 17:12:36 +0800
+
 pieledger (1.0.2ubuntu0) trusty; urgency=medium
 
   * grpcio 1.12.1
