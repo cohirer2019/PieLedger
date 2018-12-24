@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='PieLedger',
-    version='1.0.3',
+    version='1.0.4',
     setup_requires=['setuptools-git'],
     packages=['pieledger'],
     include_package_data=True,
