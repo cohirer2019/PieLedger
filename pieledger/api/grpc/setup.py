@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='PieLedger-Grpc',
-    version='1.0.2',
+    version='1.0.4',
     namespace_packages=['pieledger', 'pieledger.api', 'pieledger.api.grpc'],
     py_modules=[
         'pieledger.api.grpc.ledger_pb2',
