@@ -1,3 +1,9 @@
+pieledger (1.0.4ubuntu0) trusty; urgency=medium
+
+  * Added CANCEL / PREPAY actions
+
+ -- Flow Jiang <flowjzh@intrepid>  Fri, 28 Dec 2018 16:15:03 +0800
+
 pieledger (1.0.3ubuntu0) trusty; urgency=medium
 
   * Ensure FindOrCreateAccount only creates one account if not found
