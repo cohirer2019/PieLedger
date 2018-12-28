@@ -62,6 +62,10 @@ enum SplitAction {
   SHARE = 9;
   P = 10;
   PROFIT = 10;
+  L = 11;
+  CANCEL = 11;
+  Y = 12;
+  PREPAY = 12;
 }
 
 message Split {
