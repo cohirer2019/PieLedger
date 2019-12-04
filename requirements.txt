@@ -1,7 +1,7 @@
 click==6.7
 grpcio==1.12.1
 protobuf>=3.5.2
-git+http://dev.smart4e.com/cohirer/mapperpy.git@v0.11.1py34#egg=MapperPy
+git+https://github.com/cohirer2019/MapperPy.git@v0.11.1py34#egg=MapperPy
 piecash==0.18.0
 PyMySQL==0.8.0
 PyYAML==3.12
